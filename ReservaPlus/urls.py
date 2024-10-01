@@ -21,5 +21,5 @@ import ReservaPlus
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ReservaPlusApp/',include('ReservaPlus.urls')),
+    path('ReservaPlusApp/',include('ReservaPlusApp.urls')),
 ]

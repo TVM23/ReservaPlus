@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Lista de Habitaciones</h1>
+<a href="{% url 'agregar_habitacion' %}" class="btn btn-primary">Agregar Habitación</a>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Cupo</th>
+        <th>Acciones</th>
+    </tr>
+    {% for habitacion in habitaciones %}
+    <tr>
+        <td>{{ habitacion.id }}</td>
+        <td>{{ habitacion.nombre }}</td>
+        <td>{{ habitacion.precio }}</td>
+        <td>{{ habitacion.cupo }}</td>
+        <td>
+            <a href="{% url 'editar_habitacion' habitacion.id %}">Editar</a> |
+            <a href="{% url 'eliminar_habitacion' habitacion.id %}">Eliminar</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

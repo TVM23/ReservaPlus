@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>eliminar habitacion</title>
+</head>
+<body>
+<h1>Eliminar Habitación</h1>
+<p>¿Estás seguro que deseas eliminar la habitación: "{{ habitacion.nombre }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Eliminar</button>
+    <a href="{% url 'lista_habitaciones' %}">Cancelar</a>
+</form>
+</body>
+</html>
