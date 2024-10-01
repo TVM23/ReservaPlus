@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def agregar_habitacion(request):
+    return render(request, 'agregar_habitacion.html')
