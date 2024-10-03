@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 import ReservaPlus
+from ReservaPlusApp.views import redirect_to_home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ReservaPlusApp/',include('ReservaPlusApp.urls')),
+    path('', redirect_to_home),
 ]

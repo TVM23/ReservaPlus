@@ -43,3 +43,12 @@ def eliminar_habitacion(request, id):
         return redirect('lista_habitaciones')
 
     return render(request, 'eliminar_habitacion.html', {'habitacion': habitacion})
+
+
+# Redirigir desde la raíz a Home
+def redirect_to_home(request):
+    return redirect('home')  # Asegúrate de que 'home' sea el nombre de la URL de tu home
+
+# Vista para renderizar Home
+def home(request):
+    return render(request, 'home.html')  # Renderiza tu template home.html
