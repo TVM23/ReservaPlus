@@ -3,54 +3,69 @@
 {% block title %}Editar Habitación - Reservas Plus{% endblock %}
 
 {% block content %}
-<style>
-    h1 {
-        color: var(--primary-color);
-        text-align: center;
-        margin-top: 20px;
-    }
-    .form-container {
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 50px auto;
-        max-width: 500px;
-    }
-    .btn-primary {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-    .btn-primary:hover {
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
-    }
-</style>
+    <style>
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 20px;
+        }
 
-<h1>Editar Habitación</h1>
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 500px;
+        }
 
-<div class="container">
-    <div class="form-container">
-        <form method="post">
-            {% csrf_token %}
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
 
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ habitacion.nombre }}" required>
-            </div>
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+    </style>
 
-            <div class="mb-3">
-                <label for="precio" class="form-label">Precio:</label>
-                <input type="number" class="form-control" id="precio" name="precio" step="0.01" value="{{ habitacion.precio }}" required>
-            </div>
+    <h1>Editar Habitación</h1>
 
-            <div class="mb-3">
-                <label for="cupo" class="form-label">Cupo:</label>
-                <input type="number" class="form-control" id="cupo" name="cupo" value="{{ habitacion.cupo }}" required>
-            </div>
+    <div class="container">
+        <div class="form-container">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
-        </form>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ habitacion.nombre }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="precio" class="form-label">Precio:</label>
+                    <input type="number" class="form-control" id="precio" name="precio" step="0.01"
+                           value="{{ habitacion.precio }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cupo" class="form-label">Cupo:</label>
+                    <input type="number" class="form-control" id="cupo" name="cupo" value="{{ habitacion.cupo }}"
+                           required>
+                </div>
+
+                <label for="imagen">Imagen Actual:</label><br>
+                <img src="{{ habitacion.imagen.url }}" alt="Imagen de la habitación" width="200px"><br>
+
+                <div class="mb-3">
+                    <label for="imagen">Cambiar Imagen:</label>
+                    <input type="file" name="imagen"><br>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}

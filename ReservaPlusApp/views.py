@@ -7,9 +7,10 @@ def agregar_habitacion(request):
         nombre = request.POST.get('nombre')
         precio = request.POST.get('precio')
         cupo = request.POST.get('cupo')
+        imagen= request.FILES.get('imagen')
 
         # Crear la nueva habitación
-        nueva_habitacion = Habitacion(nombre=nombre, precio=precio, cupo=cupo)
+        nueva_habitacion = Habitacion(nombre=nombre, precio=precio, cupo=cupo,imagen=imagen)
         nueva_habitacion.save()
 
         # Redirigir a la vista de lista de habitaciones
@@ -30,6 +31,8 @@ def editar_habitacion(request, id):
         habitacion.nombre = request.POST.get('nombre')
         habitacion.precio = request.POST.get('precio')
         habitacion.cupo = request.POST.get('cupo')
+        if request.FILES.get('imagen'):
+            habitacion.imagen = request.FILES.get('imagen')
         habitacion.save()
         return redirect('lista_habitaciones')
 

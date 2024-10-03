@@ -3,60 +3,69 @@
 {% block title %}Agregar Habitación - Reservas Plus{% endblock %}
 
 {% block content %}
-<style>
-    h1 {
-        color: var(--primary-color);
-        text-align: center;
-        margin-top: 20px;
-    }
-    .form-container {
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 50px auto;
-        max-width: 500px;
-    }
-    .btn-primary {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-    .btn-primary:hover {
-        background-color: var(--secondary-color);
-        border-color: var(--secondary-color);
-    }
-</style>
+    <style>
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 20px;
+        }
 
-<h1>Agregar Nueva Habitación</h1>
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 500px;
+        }
 
-<div class="container">
-    <div class="form-container">
-        {% if error %}
-            <div class="alert alert-danger">
-                {{ error }}
-            </div>
-        {% endif %}
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
 
-        <form method="post">
-            {% csrf_token %}
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+    </style>
 
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" required>
-            </div>
+    <h1>Agregar Nueva Habitación</h1>
 
-            <div class="mb-3">
-                <label for="precio" class="form-label">Precio:</label>
-                <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
-            </div>
+    <div class="container">
+        <div class="form-container">
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
 
-            <div class="mb-3">
-                <label for="cupo" class="form-label">Cupo:</label>
-                <input type="number" class="form-control" id="cupo" name="cupo" required>
-            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <button type="submit" class="btn btn-primary w-100">Agregar Habitación</button>
-        </form>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="precio" class="form-label">Precio:</label>
+                    <input type="number" class="form-control" id="precio" name="precio" step="1.00" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cupo" class="form-label">Cupo:</label>
+                    <input type="number" class="form-control" id="cupo" name="cupo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="imagen" class="form-label">Imagen:</label>
+                <input type="file" name="imagen"><br>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary w-100">Agregar Habitación</button>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}
