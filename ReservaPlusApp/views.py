@@ -1,5 +1,5 @@
-from django.shortcuts import render,redirect
-from .models import Habitacion
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Habitacion,DetalleHabitacion
 
 
 def agregar_habitacion(request):
@@ -55,3 +55,60 @@ def redirect_to_home(request):
 # Vista para renderizar Home
 def home(request):
     return render(request, 'home.html')  # Renderiza tu template home.html
+
+def agregar_detalle_habitacion(request):
+    if request.method == "POST":
+        habitacion_id = request.POST.get('habitacion')
+        habitacion = Habitacion.objects.get(id=habitacion_id)
+        ubicacion = request.POST.get('ubicacion')
+        ventanas = request.POST.get('ventanas')
+        camas = request.POST.get('camas')
+        numero_de_camas = request.POST.get('numero_de_camas')
+        aire_acondicionado = 'aire_acondicionado' in request.POST
+        jacuzzi = 'jacuzzi' in request.POST
+
+        DetalleHabitacion.objects.create(
+            habitacion=habitacion,
+            ubicacion=ubicacion,
+            ventanas=ventanas,
+            camas=camas,
+            numero_de_camas=numero_de_camas,
+            aire_acondicionado=aire_acondicionado,
+            jacuzzi=jacuzzi
+        )
+
+        return redirect('lista_detalles_habitacion')
+
+    habitaciones = Habitacion.objects.all()
+    return render(request, 'agregar_detalle_habitacion.html', {'habitaciones': habitaciones})
+
+
+def lista_detalles_habitacion(request):
+    detalles = DetalleHabitacion.objects.all()
+    return render(request, 'lista_detalles_habitacion.html', {'detalles': detalles})
+
+
+def editar_detalle_habitacion(request, id):
+    detalle = get_object_or_404(DetalleHabitacion, id=id)
+
+    if request.method == "POST":
+        habitacion_id = request.POST.get('habitacion')
+        detalle.habitacion = Habitacion.objects.get(id=habitacion_id)
+        detalle.ubicacion = request.POST.get('ubicacion')
+        detalle.ventanas = request.POST.get('ventanas')
+        detalle.camas = request.POST.get('camas')
+        detalle.numero_de_camas = request.POST.get('numero_de_camas')
+        detalle.aire_acondicionado = 'aire_acondicionado' in request.POST
+        detalle.jacuzzi = 'jacuzzi' in request.POST
+        detalle.save()
+
+        return redirect('lista_detalles_habitacion')
+
+    habitaciones = Habitacion.objects.all()
+    return render(request, 'editar_detalle_habitacion.html', {'detalle': detalle, 'habitaciones': habitaciones})
+
+def eliminar_detalle_habitacion(request, id):
+    detalle = get_object_or_404(DetalleHabitacion, id=id)
+    detalle.delete()
+    return redirect('lista_detalles_habitacion')
+

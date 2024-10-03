@@ -1,0 +1,71 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Editar Habitación - Reservas Plus{% endblock %}
+
+{% block content %}
+    <style>
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 500px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+    </style>
+
+    <h1>Editar detalle Habitación</h1>
+
+    <div class="container">
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
+                <label for="habitacion">Habitación:</label>
+                <select name="habitacion" id="habitacion">
+                    {% for habitacion in habitaciones %}
+                        <option value="{{ habitacion.id }}"
+                                {% if habitacion.id == detalle.habitacion.id %}selected{% endif %}>{{ habitacion.nombre }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="ubicacion">Ubicación:</label>
+                <input type="text" name="ubicacion" id="ubicacion" value="{{ detalle.ubicacion }}" required>
+
+                <label for="ventanas">Número de ventanas:</label>
+                <input type="number" name="ventanas" id="ventanas" value="{{ detalle.ventanas }}" required>
+
+                <label for="camas">Tipo de camas:</label>
+                <input type="text" name="camas" id="camas" value="{{ detalle.camas }}" required>
+
+                <label for="numero_de_camas">Número de camas:</label>
+                <input type="number" name="numero_de_camas" id="numero_de_camas" value="{{ detalle.numero_de_camas }}"
+                       required>
+
+                <label for="aire_acondicionado">Aire acondicionado:</label>
+                <input type="checkbox" name="aire_acondicionado" id="aire_acondicionado"
+                       {% if detalle.aire_acondicionado %}checked{% endif %}>
+
+                <label for="jacuzzi">Jacuzzi:</label>
+                <input type="checkbox" name="jacuzzi" id="jacuzzi" {% if detalle.jacuzzi %}checked{% endif %}>
+
+                <button type="submit">Actualizar detalle</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

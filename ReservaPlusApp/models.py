@@ -9,3 +9,15 @@ class Habitacion(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class DetalleHabitacion(models.Model):
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
+    ubicacion = models.CharField(max_length=255)
+    ventanas = models.IntegerField()
+    camas = models.CharField(max_length=100)
+    numero_de_camas = models.IntegerField()
+    aire_acondicionado = models.BooleanField(default=False)
+    jacuzzi = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Detalle de {self.habitacion.nombre}"

@@ -1,0 +1,75 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Agregar Detalle Habitación - Reservas Plus{% endblock %}
+
+{% block content %}
+    <style>
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 500px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+    </style>
+
+    <h1>Agregar Nuevo detalle Habitación</h1>
+
+    <div class="container">
+        <div class="form-container">
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="habitacion">Habitación:</label>
+                <select name="habitacion" id="habitacion">
+                    {% for habitacion in habitaciones %}
+                        <option value="{{ habitacion.id }}">{{ habitacion.nombre }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="ubicacion">Ubicación:</label>
+                <input type="text" name="ubicacion" id="ubicacion" required>
+
+                <label for="ventanas">Número de ventanas:</label>
+                <input type="number" name="ventanas" id="ventanas" required>
+
+                <label for="camas">Tipo de camas:</label>
+                <input type="text" name="camas" id="camas" required>
+
+                <label for="numero_de_camas">Número de camas:</label>
+                <input type="number" name="numero_de_camas" id="numero_de_camas" required>
+
+                <label for="aire_acondicionado">Aire acondicionado:</label>
+                <input type="checkbox" name="aire_acondicionado" id="aire_acondicionado">
+
+                <label for="jacuzzi">Jacuzzi:</label>
+                <input type="checkbox" name="jacuzzi" id="jacuzzi">
+
+                <button type="submit">Guardar detalle</button>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

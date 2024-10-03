@@ -1,0 +1,61 @@
+{% extends '_Layaout.html' %}
+
+
+
+{% block title %}Lista de detalles de Habitaciones - Reservas Plus{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <h1>Lista de Habitaciones</h1>
+        <a href="{% url 'agregar_detalle_habitacion' %}" class="btn btn-primary mb-3"><i class="fas fa-plus-circle"></i>
+            Agregar Habitación</a>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Habitación</th>
+                <th>Ubicación</th>
+                <th>Ventanas</th>
+                <th>Camas</th>
+                <th>Número de camas</th>
+                <th>Aire Acondicionado</th>
+                <th>Jacuzzi</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for detalle in detalles %}
+                <tr>
+                    <td>{{ detalle.habitacion.nombre }}</td>
+                    <td>{{ detalle.ubicacion }}</td>
+                    <td>{{ detalle.ventanas }}</td>
+                    <td>{{ detalle.camas }}</td>
+                    <td>{{ detalle.numero_de_camas }}</td>
+                    <td>{{ detalle.aire_acondicionado }}</td>
+                    <td>{{ detalle.jacuzzi }}</td>
+                    <td>
+                        <a href="{% url 'editar_detalle_habitacion' detalle.id %}">Editar</a>
+                        <a href="{% url 'eliminar_detalle_habitacion' detalle.id %}">Eliminar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <!-- Inicializar DataTables -->
+    <script>
+        $(document).ready(function () {
+            $('#habitaciones-table').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"  // Traducción al español
+                },
+                "responsive": true,
+                "autoWidth": false
+            });
+        });
+    </script>
+{% endblock %}
