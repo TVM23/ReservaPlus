@@ -50,17 +50,21 @@
 
                 <div class="mb-3">
                     <label for="precio" class="form-label">Precio:</label>
-                    <input type="number" class="form-control" id="precio" name="precio" step="1.00" required>
+                    <input type="number" class="form-control" id="precio" name="precio" min="0.01" step="0.01" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="cupo" class="form-label">Cupo:</label>
-                    <input type="number" class="form-control" id="cupo" name="cupo" required>
+                    <input type="number" class="form-control" id="cupo" name="cupo" min="1" step="1" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="imagen" class="form-label">Imagen:</label>
-                <input type="file" name="imagen"><br>
+                    <label for="imagen">Cambiar Imagen:</label>
+                    <input type="file" class="form-control" name="imagen" id="imagen" accept="image/png,image/gif,image/jpeg"><br>
+                    <div class="text-center d-none" id="preview-imagen-container">
+                        <label for="imagen" id="preview-imagen-text" class="d-none">Vista previa:</label><br>
+                        <img id="preview-imagen" src="#" alt="Vista previa de la nueva imagen" class="img-fluid rounded d-none" style="max-width: 200px;">
+                    </div>
                 </div>
 
 
@@ -68,4 +72,36 @@
             </form>
         </div>
     </div>
+
+    <script>
+    document.getElementById('imagen').addEventListener('change', function(event) {
+        const input = event.target;
+        const preview = document.getElementById('preview-imagen');
+        const previewText = document.getElementById('preview-imagen-text');
+        const previewCont = document.getElementById('preview-imagen-container');
+
+        // Verifica si se seleccionó un archivo
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            // Evento cuando el archivo es cargado
+            reader.onload = function(e) {
+                preview.src = e.target.result; // Asigna el src de la vista previa
+                preview.classList.remove('d-none'); // Muestra la imagen previa
+                previewText.classList.remove('d-none'); // Muestra la imagen previa
+                previewCont.classList.remove('d-none');
+            }
+
+            // Lee el archivo como DataURL
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            // Si no se selecciona un archivo, muestra la imagen actual y oculta la vista previa
+            preview.src = '#';
+            preview.classList.add('d-none');
+            previewText.classList.add('d-none');
+            previewCont.classList.add('d-none');
+        }
+    });
+</script>
+
 {% endblock %}

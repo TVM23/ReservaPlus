@@ -154,6 +154,7 @@
                 <ul class="navbar-menu">
                     <li class="navbar-item"><a href="{% url 'home' %}">Inicio</a></li>
                     <li class="navbar-item"><a href="{% url 'lista_habitaciones' %}">Habitaciones</a></li>
+                    <li class="navbar-item"><a href="{% url 'lista_detalles_habitacion' %}">Detalles</a></li>
                     <li class="navbar-item"><a href="{% url 'home' %}">Servicios</a></li>
                     <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
                 </ul>
@@ -167,7 +168,7 @@
         </main>
     </div>
     <footer class="footer">
-        <p>&copy; 2024 Reservas Plus. Todos los derechos reservados.</p>
+        <p class="mb-0">&copy; 2024 Reservas Plus. Todos los derechos reservados.</p>
     </footer>
 
     <!-- jQuery (requerido por DataTables) -->
@@ -177,17 +178,6 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
 
-    <script>
-    $(document).ready(function() {
-        $('#habitaciones-table').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"  // Traducción al español
-            },
-            "responsive": true,
-            "autoWidth": false
-        });
-    });
-</script>
 
     {% block extra_scripts %}
     <!-- Aquí se pueden incluir scripts adicionales específicos de cada página -->

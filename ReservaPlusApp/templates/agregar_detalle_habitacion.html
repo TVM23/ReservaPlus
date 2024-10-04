@@ -30,7 +30,7 @@
         }
     </style>
 
-    <h1>Agregar Nuevo detalle Habitación</h1>
+    <h1>Agregar Nuevo Detalle Habitación</h1>
 
     <div class="container">
         <div class="form-container">
@@ -42,32 +42,49 @@
 
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <label for="habitacion">Habitación:</label>
-                <select name="habitacion" id="habitacion">
-                    {% for habitacion in habitaciones %}
-                        <option value="{{ habitacion.id }}">{{ habitacion.nombre }}</option>
-                    {% endfor %}
-                </select>
 
-                <label for="ubicacion">Ubicación:</label>
-                <input type="text" name="ubicacion" id="ubicacion" required>
+                <div class="mb-3">
+                    <label for="habitacion" class="form-label">Habitación:</label>
+                    <select name="habitacion" id="habitacion" class="form-control">
+                        {% for habitacion in habitaciones %}
+                            <option value="{{ habitacion.id }}">{{ habitacion.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <label for="ventanas">Número de ventanas:</label>
-                <input type="number" name="ventanas" id="ventanas" required>
+                <div class="mb-3">
+                    <label for="ubicacion" class="form-label">Ubicación:</label>
+                    <input type="text" name="ubicacion" id="ubicacion" class="form-control" required>
+                </div>
 
-                <label for="camas">Tipo de camas:</label>
-                <input type="text" name="camas" id="camas" required>
+                <div class="mb-3">
+                    <label for="ventanas" class="form-label">Número de ventanas:</label>
+                    <input type="number" name="ventanas" id="ventanas" class="form-control" min="1" step="1" required>
+                </div>
 
-                <label for="numero_de_camas">Número de camas:</label>
-                <input type="number" name="numero_de_camas" id="numero_de_camas" required>
+                <div class="mb-3">
+                    <label for="camas" class="form-label">Tipo de camas:</label>
+                    <input type="text" name="camas" id="camas" class="form-control" required>
+                </div>
 
-                <label for="aire_acondicionado">Aire acondicionado:</label>
-                <input type="checkbox" name="aire_acondicionado" id="aire_acondicionado">
+                <div class="mb-3">
+                    <label for="numero_de_camas" class="form-label">Número de camas:</label>
+                    <input type="number" name="numero_de_camas" id="numero_de_camas" class="form-control"
+                           min="1" step="1" required>
+                </div>
 
-                <label for="jacuzzi">Jacuzzi:</label>
-                <input type="checkbox" name="jacuzzi" id="jacuzzi">
+                <div class="form-check mb-3">
+                    <label class="form-check-label" for="aire_acondicionado">Aire acondicionado</label>
+                    <input type="checkbox" class="form-check-input" id="aire_acondicionado" name="aire_acondicionado">
+                </div>
 
-                <button type="submit">Guardar detalle</button>
+                <div class="form-check mb-3">
+                    <label class="form-check-label" for="jacuzzi">Jacuzzi</label>
+                    <input type="checkbox" class="form-check-input" id="jacuzzi" name="jacuzzi">
+                </div>
+
+
+                <button type="submit" class="btn btn-primary w-100">Guardar detalle</button>
             </form>
 
         </div>
