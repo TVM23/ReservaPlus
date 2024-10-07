@@ -1,0 +1,89 @@
+{% extends '_Layaout.html' %}
+
+
+
+{% block title %}Lista de Habitaciones - Reservas Plus{% endblock %}
+
+{% block content %}
+
+
+<h2>Servicios</h2>
+<a href="{% url 'crear_servicio' %}">Crear Servicio</a>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Imagen</th>
+            <th>Disponibilidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for servicio in servicios %}
+        <tr>
+            <td>{{ servicio.nombre }}</td>
+            <td>{{ servicio.descripcion }}</td>
+            <td>
+                {% if servicio.imagen %}
+                    <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}" style="width:100px; height:auto;">
+                {% else %}
+                    Sin Imagen
+                {% endif %}
+            </td>
+            <td>{{ servicio.disponibilidad|yesno:"Disponible,No Disponible" }}</td>
+            <td>
+                <a href="{% url 'actualizar_servicio' servicio.pk %}">Actualizar</a>
+                <form method="POST" action="{% url 'eliminar_servicio' servicio.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No hay servicios disponibles.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block extra_scripts %}
+    <!-- Inicializar DataTables -->
+    <script>
+        $(document).ready(function() {
+            $('#habitaciones-table').DataTable({
+                "language": {
+                    "decimal": ",",
+                    "thousands": ".",
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                },
+                "responsive": true,
+                "autoWidth": true
+            });
+        });
+    </script>
+{% endblock %}

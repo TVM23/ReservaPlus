@@ -23,8 +23,8 @@ import ReservaPlus
 from HotelApp.views import redirect_to_home
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('HotelApp/', include('HotelApp.urls')),
-
-    path('', redirect_to_home),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path('admin/', admin.site.urls),
+                  path('HotelApp/', include('HotelApp.urls')),
+                  path('Usuarios/', include('Usuarios.urls')),
+                  path('', redirect_to_home),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

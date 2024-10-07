@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Habitacion,DetalleHabitacion
+from django.contrib import messages
+from .models import Habitacion,DetalleHabitacion,Servicios
 
 
 def agregar_habitacion(request):
@@ -55,6 +56,8 @@ def redirect_to_home(request):
 # Vista para renderizar Home
 def home(request):
     return render(request, 'home.html')  # Renderiza tu template home.html
+
+""""""
 
 def agregar_detalle_habitacion(request):
     if request.method == "POST":
@@ -112,3 +115,51 @@ def eliminar_detalle_habitacion(request, id):
     detalle.delete()
     return redirect('lista_detalles_habitacion')
 
+""""""
+
+def crear_servicio_view(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        descripcion = request.POST['descripcion']
+        imagen = request.FILES.get('imagen')
+        disponibilidad = request.POST.get('disponibilidad') == 'on'  # Convertir a boolean
+
+        servicio = Servicios(nombre=nombre, descripcion=descripcion, imagen=imagen, disponibilidad=disponibilidad)
+        servicio.save()
+        messages.success(request, 'Servicio creado exitosamente.')
+        return redirect('listar_servicios')
+
+    return render(request, 'crear_servicio.html')
+
+
+# Listar servicios
+def listar_servicios_view(request):
+    servicios = Servicios.objects.all()
+    return render(request, 'listar_servicios.html', {'servicios': servicios})
+
+
+# Actualizar servicio
+def actualizar_servicio_view(request, pk):
+    servicio = get_object_or_404(Servicios, pk=pk)
+
+    if request.method == 'POST':
+        servicio.nombre = request.POST['nombre']
+        servicio.descripcion = request.POST['descripcion']
+        if 'imagen' in request.FILES:
+            servicio.imagen = request.FILES['imagen']
+        servicio.disponibilidad = request.POST.get('disponibilidad') == 'on'
+        servicio.save()
+        messages.success(request, 'Servicio actualizado exitosamente.')
+        return redirect('listar_servicios')
+
+    return render(request, 'actualizar_servicio.html', {'servicio': servicio})
+
+
+# Eliminar servicio
+def eliminar_servicio_view(request, pk):
+    servicio = get_object_or_404(Servicios, pk=pk)
+    if request.method == 'POST':
+        servicio.delete()
+        messages.success(request, 'Servicio eliminado exitosamente.')
+        return redirect('listar_servicios')
+    return render(request, 'eliminar_servicio.html', {'servicio': servicio})

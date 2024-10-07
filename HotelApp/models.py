@@ -21,3 +21,12 @@ class DetalleHabitacion(models.Model):
 
     def __str__(self):
         return f"Detalle de {self.habitacion.nombre}"
+
+class Servicios(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    imagen = models.ImageField(upload_to='servicios/', null=True, blank=True)
+    disponibilidad=models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.nombre

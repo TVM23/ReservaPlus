@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-2v-s%z%3)d!-ced-z+lott!cr6*y2^t9gedpldr$*vdl@@&*d&
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -52,7 +50,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'ReservaPlus.urls'
 
 TEMPLATES = [
@@ -61,6 +58,7 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'HotelApp', 'templates'),  # Ruta a las plantillas de HotelApp
             os.path.join(BASE_DIR, 'ReservaPlus', 'static/Template-Padre'),
+            os.path.join(BASE_DIR, 'Usuarios', 'templates'),
 
         ]
         ,
@@ -78,7 +76,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ReservaPlus.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -92,7 +89,6 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -111,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

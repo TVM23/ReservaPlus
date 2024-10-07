@@ -1,0 +1,61 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Editar Habitación - Reservas Plus{% endblock %}
+
+{% block content %}
+
+
+
+    <h2>Actualizar Servicio: {{ servicio.nombre }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ servicio.nombre }}" required><br>
+
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" required>{{ servicio.descripcion }}</textarea><br>
+
+        <label for="imagen">Imagen Actual:</label>
+        <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}" style="width:100px; height:auto;"><br>
+        <label for="imagen">Subir Nueva Imagen:</label>
+        <input type="file" id="imagen" name="imagen"><br>
+
+        <label for="disponibilidad">Disponibilidad:</label>
+        <input type="checkbox" id="disponibilidad" name="disponibilidad"
+               {% if servicio.disponibilidad %}checked{% endif %}><br>
+
+        <button type="submit">Actualizar Servicio</button>
+    </form>
+
+    <script>
+        document.getElementById('imagen').addEventListener('change', function (event) {
+            const input = event.target;
+            const preview = document.getElementById('preview-imagen');
+            const previewText = document.getElementById('preview-imagen-text');
+            const previewCont = document.getElementById('preview-imagen-container');
+
+            // Verifica si se seleccionó un archivo
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                // Evento cuando el archivo es cargado
+                reader.onload = function (e) {
+                    preview.src = e.target.result; // Asigna el src de la vista previa
+                    preview.classList.remove('d-none'); // Muestra la imagen previa
+                    previewText.classList.remove('d-none'); // Muestra la imagen previa
+                    previewCont.classList.remove('d-none');
+                }
+
+                // Lee el archivo como DataURL
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                // Si no se selecciona un archivo, muestra la imagen actual y oculta la vista previa
+                preview.src = '#';
+                preview.classList.add('d-none');
+                previewText.classList.add('d-none');
+                previewCont.classList.add('d-none');
+            }
+        });
+    </script>
+{% endblock %}
+
