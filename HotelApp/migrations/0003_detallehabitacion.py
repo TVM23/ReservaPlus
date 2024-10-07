@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ReservaPlusApp', '0002_habitacion_imagen'),
+        ('HotelApp', '0002_habitacion_imagen'),
     ]
 
     operations = [
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('numero_de_camas', models.IntegerField()),
                 ('aire_acondicionado', models.BooleanField(default=False)),
                 ('jacuzzi', models.BooleanField(default=False)),
-                ('habitacion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ReservaPlusApp.habitacion')),
+                ('habitacion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='HotelApp.habitacion')),
             ],
         ),
     ]

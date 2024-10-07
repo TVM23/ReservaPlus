@@ -31,7 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'ReservaPlusApp',
+    'HotelApp',
+    'Usuarios',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,7 +58,11 @@ ROOT_URLCONF = 'ReservaPlus.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'ReservaPlusApp', 'templates')]
+        'DIRS': [
+            os.path.join(BASE_DIR, 'HotelApp', 'templates'),  # Ruta a las plantillas de HotelApp
+            os.path.join(BASE_DIR, 'ReservaPlus', 'Template-Padre'),
+
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {

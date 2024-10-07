@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ReservaPlusApp', '0001_initial'),
+        ('HotelApp', '0001_initial'),
     ]
 
     operations = [

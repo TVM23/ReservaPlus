@@ -1,6 +1,6 @@
-{% extends '../../ReservaPlus/Template-Padre/_Layaout.html' %}
+{% extends '_Layaout.html' %}
 
-{% block title %}Editar Habitación - Reservas Plus{% endblock %}
+{% block title %}Agregar Detalle Habitación - Reservas Plus{% endblock %}
 
 {% block content %}
     <style>
@@ -30,59 +30,63 @@
         }
     </style>
 
-    <h1>Editar Detalle Habitación</h1>
+    <h1>Agregar Nuevo Detalle Habitación</h1>
 
     <div class="container">
         <div class="form-container">
-            <form method="POST">
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
+
                 <div class="mb-3">
                     <label for="habitacion" class="form-label">Habitación:</label>
-                     <select name="habitacion" id="habitacion" class="form-control">
+                    <select name="habitacion" id="habitacion" class="form-control">
                         {% for habitacion in habitaciones %}
-                            <option value="{{ habitacion.id }}"
-                                    {% if habitacion.id == detalle.habitacion.id %}selected{% endif %}>{{ habitacion.nombre }}</option>
+                            <option value="{{ habitacion.id }}">{{ habitacion.nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="mb-3">
                     <label for="ubicacion" class="form-label">Ubicación:</label>
-                    <input type="text" name="ubicacion" id="ubicacion" value="{{ detalle.ubicacion }}" class="form-control"
-                           required>
+                    <input type="text" name="ubicacion" id="ubicacion" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="ventanas">Número de ventanas:</label>
-                    <input type="number" name="ventanas" id="ventanas" value="{{ detalle.ventanas }}" class="form-control"
-                       required>
+                    <label for="ventanas" class="form-label">Número de ventanas:</label>
+                    <input type="number" name="ventanas" id="ventanas" class="form-control" min="1" step="1" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="camas">Tipo de camas:</label>
-                    <input type="text" name="camas" id="camas" value="{{ detalle.camas }}" class="form-control"
-                       required>
+                    <label for="camas" class="form-label">Tipo de camas:</label>
+                    <input type="text" name="camas" id="camas" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="numero_de_camas">Número de camas:</label>
-                    <input type="number" name="numero_de_camas" id="numero_de_camas" value="{{ detalle.numero_de_camas }}" class="form-control"
-                       required>
+                    <label for="numero_de_camas" class="form-label">Número de camas:</label>
+                    <input type="number" name="numero_de_camas" id="numero_de_camas" class="form-control"
+                           min="1" step="1" required>
                 </div>
 
                 <div class="form-check mb-3">
                     <label class="form-check-label" for="aire_acondicionado">Aire acondicionado</label>
-                    <input type="checkbox" class="form-check-input"  name="aire_acondicionado" id="aire_acondicionado"
-                       {% if detalle.aire_acondicionado %}checked{% endif %}>
+                    <input type="checkbox" class="form-check-input" id="aire_acondicionado" name="aire_acondicionado">
                 </div>
 
                 <div class="form-check mb-3">
                     <label class="form-check-label" for="jacuzzi">Jacuzzi</label>
-                    <input class="form-check-input" type="checkbox" name="jacuzzi" id="jacuzzi" {% if detalle.jacuzzi %}checked{% endif %}>
+                    <input type="checkbox" class="form-check-input" id="jacuzzi" name="jacuzzi">
                 </div>
 
-                <button type="submit"  class="btn btn-primary w-100">Actualizar detalle</button>
+
+                <button type="submit" class="btn btn-primary w-100">Guardar detalle</button>
             </form>
+
         </div>
     </div>
 {% endblock %}

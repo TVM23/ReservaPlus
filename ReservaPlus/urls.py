@@ -20,10 +20,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 import ReservaPlus
-from ReservaPlusApp.views import redirect_to_home
+from HotelApp.views import redirect_to_home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ReservaPlusApp/',include('ReservaPlusApp.urls')),
+    path('HotelApp/', include('HotelApp.urls')),
+
     path('', redirect_to_home),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
