@@ -60,7 +60,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'HotelApp', 'templates'),  # Ruta a las plantillas de HotelApp
-            os.path.join(BASE_DIR, 'ReservaPlus', 'Template-Padre'),
+            os.path.join(BASE_DIR, 'ReservaPlus', 'static/Template-Padre'),
 
         ]
         ,
@@ -127,8 +127,11 @@ APPEND_SLASH = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+STATIC_URL = '/static/'
 
-STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "ReservaPlus/static",  # Ajusta esto si tu carpeta está en otro lugar
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

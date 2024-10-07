@@ -3,78 +3,7 @@
 {% block title %}ReservaPlus - Your Ideal Hotel Experience{% endblock %}
 
 {% block content %}
-<style>
-    .hero {
-        background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
-        background-size: cover;
-        background-position: center;
-        height: 500px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-    .hero-content {
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 2rem;
-        border-radius: 10px;
-    }
-    .hero h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-    }
-    .hero p {
-        font-size: 1.2rem;
-        margin-bottom: 1.5rem;
-    }
-    .cta-button {
-        display: inline-block;
-        background-color: var(--secondary-color);
-        color: white;
-        padding: 0.8rem 1.5rem;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-    }
-    .cta-button:hover {
-        background-color: var(--primary-color);
-    }
-    .features {
-        display: flex;
-        justify-content: space-between;
-        padding: 4rem 2rem;
-        background-color: #f8f9fa;
-        gap: 2rem;
-    }
-    .feature {
-        flex-basis: calc(33.333% - 1.333rem);
-        text-align: center;
-        padding: 2rem;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .feature:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    }
-    .feature h3 {
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-    }
 
-    @media (max-width: 768px) {
-        .features {
-            flex-direction: column;
-        }
-        .feature {
-            margin-bottom: 2rem;
-        }
-    }
-</style>
 
 <section class="hero">
     <div class="hero-content">
