@@ -37,14 +37,27 @@
                 </div>
                 <ul class="navbar-menu">
                     <li class="navbar-item"><a href="{% url 'home' %}">Inicio</a></li>
-                    <li class="navbar-item"><a href="{% url 'lista_habitaciones' %}">Habitaciones</a></li>
-                    <li class="navbar-item"><a href="{% url 'lista_detalles_habitacion' %}">Detalles</a></li>
+                    <li class="navbar-item dropdown">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Habitaciones
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'lista_habitaciones' %}">Lista de Habitaciones</a></li>
+                            <li><a class="dropdown-item" href="{% url 'lista_detalles_habitacion' %}">Detalles</a></li>
+                        </ul>
+                    </li>
                     <li class="navbar-item"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
                     <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
                     {% if request.user.is_authenticated %}
-                        <li class="navbar-item">Bienvenido, {{ request.user.username }}</li>
-                        <li class="navbar-item">
-                            <a href="{% url 'logout' %}">Cerrar Sesión</a>
+                        <li class="navbar-item dropdown">
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown"
+                               aria-expanded="false" style="color: #333333">
+                                Bienvenido, {{ request.user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'user_profile' %}">Datos del usuario</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                            </ul>
                         </li>
                     {% else %}
                         <li class="navbar-item">

@@ -1,0 +1,97 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Perfil de Usuario - Reservas Plus{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Barra lateral -->
+        <div class="col-md-3">
+            <div class="profile-sidebar shadow-sm p-3 rounded">
+                <div class="text-center mb-4">
+                    <img src="https://via.placeholder.com/100" alt="Avatar del Usuario" class="rounded-circle mb-3">
+                    <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p class="text-muted">{{ user.email }}</p>
+                </div>
+                <nav>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">Información Personal</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Facturación y Pagos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Historial de Reservas</a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- Botón que activa el modal de cerrar sesión -->
+                            <a href="#" class="nav-link text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">Cerrar Sesión</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Sección principal de información -->
+        <div class="col-md-9">
+            <div class="profile-info shadow-sm p-4 rounded">
+                <h4 class="mb-4">Información Personal</h4>
+                <p>Administra tu información personal, incluyendo el número de teléfono y correo electrónico donde podemos contactarte.</p>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="info-box p-3 rounded">
+                            <h6>Nombre</h6>
+                            <p>{{ user.first_name }} {{ user.last_name }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box p-3 rounded">
+                            <h6>Última Actividad</h6>
+                            <p>{{ user.last_login|date:"d M Y, H:i" }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="info-box p-3 rounded">
+                            <h6>Correo Electrónico</h6>
+                            <p>{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <div class="info-box p-3 rounded">
+                            <h6>Fecha de Registro</h6>
+                            <p>{{ user.date_joined|date:"d M Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para cerrar sesión -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Cerrar Sesión</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro que quieres cerrar sesión?</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, cerrar sesión</button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, regresar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+

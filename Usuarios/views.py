@@ -1,8 +1,7 @@
-from django.shortcuts import render
-
 # Create your views here.
 # Users/views.py
 from django.views import View
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
@@ -54,4 +53,10 @@ def logout_view(request):
         logout(request)
         return redirect('home')
     return render(request, 'logout.html')
+
+@login_required
+def user_profile(request):
+    # El usuario que está autenticado puede acceder aquí
+    user = request.user
+    return render(request, 'user_profile.html', {'user': user})
 
