@@ -2,51 +2,49 @@
 
 
 
-{% block title %}Lista de Habitaciones - Reservas Plus{% endblock %}
+{% block title %}Lista de Servicios - Reservas Plus{% endblock %}
 
 {% block content %}
 
 
-<h2>Servicios</h2>
-<a href="{% url 'crear_servicio' %}">Crear Servicio</a>
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Imagen</th>
-            <th>Disponibilidad</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for servicio in servicios %}
-        <tr>
-            <td>{{ servicio.nombre }}</td>
-            <td>{{ servicio.descripcion }}</td>
-            <td>
-                {% if servicio.imagen %}
-                    <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}" style="width:100px; height:auto;">
-                {% else %}
-                    Sin Imagen
-                {% endif %}
-            </td>
-            <td>{{ servicio.disponibilidad|yesno:"Disponible,No Disponible" }}</td>
-            <td>
-                <a href="{% url 'actualizar_servicio' servicio.pk %}">Actualizar</a>
-                <form method="POST" action="{% url 'eliminar_servicio' servicio.pk %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Eliminar</button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No hay servicios disponibles.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container-fluid mt-4">
+    <h1>Lista de Servicios</h1>
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'crear_servicio' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Agregar Servicio
+        </a>
+    </div>
+
+    <div class="p-4 border rounded bg-light shadow-sm table-responsive">
+        <table id="servicios-table" class="table table-hover table-bordered table-responsive">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Disponibilidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for servicio in servicios %}
+                <tr>
+                    <td>{{ servicio.id }}</td>
+                    <td>{{ servicio.nombre }}</td>
+                    <td>{{ servicio.descripcion }}</td>
+                    <td>{{ servicio.disponibilidad|yesno:"Disponible,No Disponible" }}</td>
+                    <td>
+                        <div class="text-center">
+                            <a href="{% url 'actualizar_servicio' servicio.id %}" class="btn btn-sm btn-warning"> <i class="fas fa-edit"></i> Editar</a>
+                            <a href="{% url 'eliminar_servicio' servicio.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -54,7 +52,7 @@
     <!-- Inicializar DataTables -->
     <script>
         $(document).ready(function() {
-            $('#habitaciones-table').DataTable({
+            $('#servicios-table').DataTable({
                 "language": {
                     "decimal": ",",
                     "thousands": ".",

@@ -1,37 +1,65 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<form method="POST">
-    {% csrf_token %}
+{% extends '_Layaout.html' %}
 
-    <label for="firstname">First Name</label>
-    <input type="text" name="firstname" id="firstname" required>
+{% block title %}Registro - Reservas Plus{% endblock %}
 
-    <label for="lastname">Last Name</label>
-    <input type="text" name="lastname" id="lastname" required>
+{% block content %}
 
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required>
+<div class="form-container form-register">
+    <div class="text-center mb-4">
+        <img src="https://i.postimg.cc/Y2N3rsQ9/35a3db64-cf1a-4ac3-89e5-d5f9e84a6c67.jpg" alt="Reservas Plus Logo" class="login-logo">
+    </div>
 
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" required>
+    <h2 class="text-center mb-4">Regístrate</h2>
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
+    <form method="POST">
+        {% csrf_token %}
 
-    <button type="submit">Register</button>
-</form>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="firstname" class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="firstname" id="firstname" placeholder="Ingresa tu nombre" required>
+            </div>
 
-{% if messages %}
-    <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-</body>
-</html>
+            <div class="col-md-6 mb-3">
+                <label for="lastname" class="form-label">Apellido</label>
+                <input type="text" class="form-control" name="lastname" id="lastname" placeholder="Ingresa tu apellido" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="username" class="form-label">Nombre de Usuario</label>
+                <input type="text" class="form-control" name="username" id="username" placeholder="Elige un nombre de usuario" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" name="email" id="email" placeholder="Ingresa tu correo" required>
+            </div>
+        </div>
+
+        <div class="form-group mb-4">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="Elige una contraseña" required>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
+        </div>
+    </form>
+
+    <p class="text-center mt-3">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+
+    {% if messages %}
+        <div class="alert alert-info mt-3">
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+

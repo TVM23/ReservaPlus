@@ -1,31 +1,58 @@
 {% extends '_Layaout.html' %}
 
-{% block title %}Editar Habitación - Reservas Plus{% endblock %}
+{% block title %}Editar Servicio - Reservas Plus{% endblock %}
 
 {% block content %}
 
 
+    <h1>Editar Servicio: {{ servicio.nombre }}</h1>
 
-    <h2>Actualizar Servicio: {{ servicio.nombre }}</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" value="{{ servicio.nombre }}" required><br>
+    <div class="container">
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3 form-group">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre"
+                           value="{{ servicio.nombre }}" required>
+                </div>
 
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" required>{{ servicio.descripcion }}</textarea><br>
+                <div class="mb-3 form-group">
+                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" required>{{ servicio.descripcion }}
+                    </textarea>
+                </div>
 
-        <label for="imagen">Imagen Actual:</label>
-        <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}" style="width:100px; height:auto;"><br>
-        <label for="imagen">Subir Nueva Imagen:</label>
-        <input type="file" id="imagen" name="imagen"><br>
+                <div class="form-check mb-3">
+                    <label for="disponibilidad" class="form-check-label">Disponibilidad</label>
+                    <input type="checkbox" class="form-check-input" id="disponibilidad" name="disponibilidad"
+                    {% if servicio.disponibilidad %}checked{% endif %}>
+                </div>
 
-        <label for="disponibilidad">Disponibilidad:</label>
-        <input type="checkbox" id="disponibilidad" name="disponibilidad"
-               {% if servicio.disponibilidad %}checked{% endif %}><br>
+                <div class="mb-3 text-center">
+                    <label for="imagen">Imagen Actual:</label><br>
+                    <img id="imagen-actual" src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}" class="img-fluid rounded" style="max-width: 200px; height: 125px;"><br>
+                </div>
 
-        <button type="submit">Actualizar Servicio</button>
-    </form>
+                <div class="mb-3 form-group">
+                    <label for="imagen" class="form-label">Subir Nueva Imagen:</label>
+                    <input type="file" class="form-control" id="imagen" name="imagen" accept="image/png,image/gif,image/jpeg">
+                </div>
+
+                <div class="mb-3 form-group">
+                    <div class="text-center d-none" id="preview-imagen-container">
+                        <label for="imagen" id="preview-imagen-text" class="d-none">Vista previa:</label><br>
+                        <img id="preview-imagen" src="#" alt="Vista previa de la nueva imagen"
+                             class="img-fluid rounded d-none" style="max-width: 200px; height: 125px;">
+                    </div><br id="br-imgPrevio" class="d-none">
+                </div>
+
+                <div class="mb-3 form-group">
+                    <button type="submit" class="btn btn-primary w-100">Actualizar Servicio</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         document.getElementById('imagen').addEventListener('change', function (event) {
@@ -33,6 +60,7 @@
             const preview = document.getElementById('preview-imagen');
             const previewText = document.getElementById('preview-imagen-text');
             const previewCont = document.getElementById('preview-imagen-container');
+            const brimgPrevio = document.getElementById('br-imgPrevio')
 
             // Verifica si se seleccionó un archivo
             if (input.files && input.files[0]) {
@@ -44,6 +72,7 @@
                     preview.classList.remove('d-none'); // Muestra la imagen previa
                     previewText.classList.remove('d-none'); // Muestra la imagen previa
                     previewCont.classList.remove('d-none');
+                    brimgPrevio.classList.remove('d-none')
                 }
 
                 // Lee el archivo como DataURL
@@ -54,6 +83,7 @@
                 preview.classList.add('d-none');
                 previewText.classList.add('d-none');
                 previewCont.classList.add('d-none');
+                brimgPrevio.classList.add('d-none')
             }
         });
     </script>

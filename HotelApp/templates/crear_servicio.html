@@ -1,27 +1,54 @@
 {% extends '_Layaout.html' %}
 
-{% block title %}Agregar Habitación - Reservas Plus{% endblock %}
+{% block title %}Agregar Servicio - Reservas Plus{% endblock %}
 
 {% block content %}
 
+    <h1>Agregar Nuevo Servicio</h1>
 
-    <h2>Crear Servicio</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required><br>
+    <div class="container">
+        <div class="form-container">
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" required></textarea><br>
+                <div class="mb-3 form-group">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
 
-        <label for="imagen">Imagen:</label>
-        <input type="file" id="imagen" name="imagen"><br>
+                <div class="mb-3 form-group">
+                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
+                </div>
 
-        <label for="disponibilidad">Disponibilidad:</label>
-        <input type="checkbox" id="disponibilidad" name="disponibilidad"><br>
+                <div class="form-check mb-3">
+                    <label for="disponibilidad" class="form-check-label">Disponibilidad</label>
+                    <input type="checkbox" class="form-check-input" id="disponibilidad" name="disponibilidad">
+                </div>
 
-        <button type="submit">Crear Servicio</button>
-    </form>
+                <div class="mb-3 form-group">
+                    <label for="imagen" class="form-label">Imagen:</label>
+                    <input type="file" class="form-control" id="imagen" name="imagen" accept="image/png,image/gif,image/jpeg" required>
+                </div>
+
+                <div class="mb-3 form-group">
+                    <div class="text-center d-none" id="preview-imagen-container">
+                        <label for="imagen" id="preview-imagen-text" class="d-none">Vista previa:</label><br>
+                        <img id="preview-imagen" src="#" alt="Vista previa de la nueva imagen" class="img-fluid rounded d-none" style="max-width: 200px; height: 125px;">
+                    </div><br id="br-imgPrevio" class="d-none">
+                </div>
+
+                <div class="mb-3 form-group">
+                    <button type="submit" class="btn btn-primary w-100 form-group">Crear Servicio</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
     <script>
@@ -30,6 +57,7 @@
             const preview = document.getElementById('preview-imagen');
             const previewText = document.getElementById('preview-imagen-text');
             const previewCont = document.getElementById('preview-imagen-container');
+            const brimgPrevio = document.getElementById('br-imgPrevio')
 
             // Verifica si se seleccionó un archivo
             if (input.files && input.files[0]) {
@@ -41,6 +69,7 @@
                     preview.classList.remove('d-none'); // Muestra la imagen previa
                     previewText.classList.remove('d-none'); // Muestra la imagen previa
                     previewCont.classList.remove('d-none');
+                    brimgPrevio.classList.remove('d-none')
                 }
 
                 // Lee el archivo como DataURL
@@ -51,6 +80,7 @@
                 preview.classList.add('d-none');
                 previewText.classList.add('d-none');
                 previewCont.classList.add('d-none');
+                brimgPrevio.classList.add('d-none')
             }
         });
     </script>

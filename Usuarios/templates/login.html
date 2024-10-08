@@ -1,28 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<form method="POST">
-    {% csrf_token %}
+{% extends '_Layaout.html' %}
 
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" required>
+{% block title %}Inicio de Sesión - Reservas Plus{% endblock %}
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
+{% block content %}
+<div class="form-container">
+    <div class="text-center mb-4">
+        <img src="https://i.postimg.cc/Y2N3rsQ9/35a3db64-cf1a-4ac3-89e5-d5f9e84a6c67.jpg" alt="Reservas Plus Logo" class="login-logo">
+    </div>
 
-    <button type="submit">Login</button>
-</form>
-<p>¿Aún no estás registrado? <a href="{% url 'registro' %}">Regístrate aquí</a></p>
-{% if messages %}
-    <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-</body>
-</html>
+    <h2 class="text-center mb-4">Inicia Sesión</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group mb-3">
+            <label for="username" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" name="username" id="username" placeholder="Ingresa tu usuario" required>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="Ingresa tu contraseña" required>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+        </div>
+    </form>
+
+    <p class="text-center mt-3">¿Aún no tienes una cuenta? <a href="{% url 'registro' %}">Regístrate aquí</a></p>
+
+    {% if messages %}
+        <div class="alert alert-info mt-3">
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+

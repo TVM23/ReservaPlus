@@ -5,16 +5,16 @@
 {% block content %}
 
 
-<h1>Eliminar Habitación</h1>
+<h1 class="h1Danger">Eliminar Habitación</h1>
 
 <div class="container">
-    <div class="form-container">
-        <p>¿Estás seguro que deseas eliminar la habitación: <strong>"{{ habitacion.nombre }}"</strong>?</p>
+    <div class="form-container" style="text-align: center;">
+        <p>¿Estás seguro que deseas eliminar: <strong>"{{ habitacion.nombre }}"</strong>?</p>
 
         <form method="post">
             {% csrf_token %}
+             <a href="{% url 'lista_habitaciones' %}" class="btn btn-primary">Cancelar</a>
             <button type="submit" class="btn btn-danger">Eliminar</button>
-            <a href="{% url 'lista_habitaciones' %}" class="btn btn-link">Cancelar</a>
         </form>
     </div>
 </div>

@@ -4,12 +4,18 @@
 
 {% block content %}
 
-<h2>Eliminar Servicio: {{ servicio.nombre }}</h2>
-<p>¿Estás seguro de que deseas eliminar este servicio?</p>
-<form method="POST">
-    {% csrf_token %}
-    <button type="submit">Confirmar Eliminación</button>
-</form>
-<a href="{% url 'listar_servicios' %}">Cancelar</a>
+
+<h1 class="h1Danger">Eliminar Servicio: {{ servicio.nombre }}</h1>
+
+<div class="container">
+    <div class="form-container" style="text-align: center;">
+        <p>¿Estás seguro de que deseas eliminar este servicio?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <a href="{% url 'listar_servicios' %}" class="btn btn-primary">Cancelar</a>
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+    </div>
+</div>
 
 {% endblock %}
