@@ -1,0 +1,44 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Registro - Reservas Plus{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="firstname">Nombre:</label>
+    <input type="text" name="firstname" required><br>
+
+    <label for="lastname">Apellido:</label>
+    <input type="text" name="lastname" required><br>
+
+    <label for="username">Usuario:</label>
+    <input type="text" name="username" required><br>
+
+    <label for="email">Correo electrónico:</label>
+    <input type="email" name="email" required><br>
+
+    <label for="password">Contraseña:</label>
+    <input type="password" name="password" required><br>
+
+    <label for="is_empleado">¿Es empleado?</label>
+    <input type="checkbox" name="is_empleado"><br>
+
+    <label for="is_admin">¿Es administrador?</label>
+    <input type="checkbox" name="is_admin"><br>
+
+    <button type="submit">Registrar</button>
+</form>
+    {% if messages %}
+        <div class="alert alert-info mt-3">
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+

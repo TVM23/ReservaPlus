@@ -44,11 +44,12 @@ class LoginView(View):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            # Redirigir a 'next_url' si está presente, de lo contrario a 'home'
+
             if next_url:
                 return redirect(next_url)
             else:
-                return redirect('home')  # Cambia 'home' por el nombre de tu vista de inicio
+                return redirect('home')
+
         else:
             messages.error(request, 'Credenciales inválidas.')
             return render(request, 'login.html')
@@ -83,4 +84,39 @@ def toggle_usuario_status(request, user_id):
 
     # Redirigir de nuevo a la lista de usuarios
     return redirect('usuario_list')
+
+
+def Registro(request):
+    if request.method == 'POST':
+        firstname = request.POST['firstname']
+        lastname = request.POST['lastname']
+        username = request.POST['username']
+        password = request.POST['password']
+        email = request.POST['email']
+        is_empleado = request.POST.get('is_empleado', False)  # Checkbox
+        is_admin = request.POST.get('is_admin', False)  # Checkbox
+        try:
+            user = User.objects.create_user(first_name=firstname, last_name=lastname, username=username,
+                                            password=password, email=email)
+
+            # Asignar permisos según los checkboxes
+            if is_admin == 'on':
+                user.is_staff = True
+                user.is_superuser = True
+            elif is_empleado == 'on':
+                user.is_staff = True
+                user.is_superuser = False
+            else:
+                user.is_staff = False
+                user.is_superuser = False  # Cliente
+
+            user.save()
+
+            messages.success(request, 'Registro exitoso. Puedes iniciar sesión ahora.')
+            return redirect('login')
+        except Exception as e:
+            messages.error(request, f'Error en el registro: {e}')
+            return render(request, 'registro.html')
+
+    return render(request, 'registro2.html')
 

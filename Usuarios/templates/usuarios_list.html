@@ -6,6 +6,12 @@
     <div class="container-fluid mt-4">
         <h1>Lista de Usuarios</h1>
 
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'Registro_A-E' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Agregar Usuario
+        </a>
+    </div>
+
         <div class="p-4 border rounded bg-light shadow-sm table-responsive">
             <table id="usuarios-table" class="table table-hover table-bordered table-responsive">
                 <thead class="table-dark">

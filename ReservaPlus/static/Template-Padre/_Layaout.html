@@ -25,79 +25,89 @@
 </head>
 
 <body>
-    <div class="page-container">
-        <header>
-            <nav class="navbar">
-                <div class="navbar-brand">
-                    <a href="{% url 'home' %}">
-                        <img src="https://i.postimg.cc/Y2N3rsQ9/35a3db64-cf1a-4ac3-89e5-d5f9e84a6c67.jpg"
-                             alt="Reservas Plus Logo" class="navbar-logo">
-                        <span class="navbar-title">ReservasPlus</span>
-                    </a>
-                </div>
-                <ul class="navbar-menu">
-                    <li class="navbar-item"><a href="{% url 'home' %}">Inicio</a></li>
-                    <li class="navbar-item dropdown">
-                        <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            Habitaciones
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'lista_habitaciones' %}">Lista de Habitaciones</a></li>
-                            <li><a class="dropdown-item" href="{% url 'lista_detalles_habitacion' %}">Detalles</a></li>
-                        </ul>
-                    </li>
-                    <li class="navbar-item"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
-                    <li class="navbar-item"><a href="{% url 'usuario_list' %}">Usuarios</a></li>
-                    <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
-                    {% if request.user.is_authenticated %}
+<div class="page-container">
+    <header>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <a href="{% url 'home' %}">
+                    <img src="https://i.postimg.cc/Y2N3rsQ9/35a3db64-cf1a-4ac3-89e5-d5f9e84a6c67.jpg"
+                         alt="Reservas Plus Logo" class="navbar-logo">
+                    <span class="navbar-title">ReservasPlus</span>
+                </a>
+            </div>
+            <ul class="navbar-menu">
+                <li class="navbar-item"><a href="{% url 'home' %}">Inicio</a></li>
+
+
+                {% if request.user.is_authenticated %}
+                    {% if request.user.is_staff or request.user.is_superuser %}
                         <li class="navbar-item dropdown">
-                            <a class="dropdown-toggle" data-bs-toggle="dropdown"
-                               aria-expanded="false" style="color: #333333">
-                                Bienvenido, {{ request.user.username }}
-                            </a>
+                            <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Habitaciones</a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'user_profile' %}">Datos del usuario</a></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                                <li><a class="dropdown-item" href="{% url 'lista_habitaciones' %}">Lista de
+                                    Habitaciones</a>
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'lista_detalles_habitacion' %}">Detalles</a>
+                                </li>
                             </ul>
                         </li>
-                    {% else %}
-                        <li class="navbar-item">
-                            <a href="{% url 'login' %}">Iniciar Sesión</a>
-                        </li>
+                        <li class="navbar-item"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
+                        {% if request.user.is_superuser %}
+                            <li class="navbar-item"><a href="{% url 'usuario_list' %}">Usuarios</a></li>
+                        {% endif %}
                     {% endif %}
-                </ul>
-            </nav>
-        </header>
+                {% endif %}
+                <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
 
-        <div class="container-fluid p-0">
-            <main role="main" class="content pb-3">
-                {% block content %}
+                {% if request.user.is_authenticated %}
+                    <li class="navbar-item dropdown">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown"
+                           aria-expanded="false" style="color: #333333">
+                            Bienvenido, {{ request.user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'user_profile' %}">Datos del usuario</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="navbar-item">
+                        <a href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container-fluid p-0">
+        <main role="main" class="content pb-3">
+            {% block content %}
                 <!-- Aquí se insertará el contenido específico de cada vista -->
-                {% endblock %}
-            </main>
-        </div>
+            {% endblock %}
+        </main>
     </div>
+</div>
 
-    <footer class="footer">
-        <p class="mb-0">&copy; 2024 Reservas Plus. Todos los derechos reservados.</p>
-    </footer>
+<footer class="footer">
+    <p class="mb-0">&copy; 2024 Reservas Plus. Todos los derechos reservados.</p>
+</footer>
 
-    <!-- jQuery (requerido por DataTables) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-            integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- jQuery (requerido por DataTables) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
 
-    {% block extra_scripts %}
+{% block extra_scripts %}
     <!-- Aquí se pueden incluir scripts adicionales específicos de cada página -->
-    {% endblock %}
+{% endblock %}
 </body>
 
 </html>
