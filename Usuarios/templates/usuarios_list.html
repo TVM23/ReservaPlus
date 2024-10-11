@@ -1,0 +1,103 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Lista de Usuarios - Gestión de Usuarios{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-4">
+        <h1>Lista de Usuarios</h1>
+
+        <div class="p-4 border rounded bg-light shadow-sm table-responsive">
+            <table id="usuarios-table" class="table table-hover table-bordered table-responsive">
+                <thead class="table-dark">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Empleado</th>
+                    <th>Administrador</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for usuario in usuarios %}
+                    <tr class="text-center">
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.username }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>
+                            {% if usuario.is_staff %}
+                                <span class="badge bg-info">Sí</span>
+                            {% else %}
+                                <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if usuario.is_superuser %}
+                                <span class="badge bg-info">Sí</span>
+                            {% else %}
+                                <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if usuario.is_active %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <form action="{% url 'toggle_usuario_status' usuario.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm {% if usuario.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                        {% if usuario.is_active %}
+                                            <i class="fas fa-user-slash"></i> Desactivar
+                                        {% else %}
+                                            <i class="fas fa-user-check"></i> Activar
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <!-- Inicializar DataTables para la tabla de usuarios -->
+    <script>
+        $(document).ready(function() {
+            $('#usuarios-table').DataTable({
+                "language": {
+                    "decimal": ",",
+                    "thousands": ".",
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sSearch": "Buscar:",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                },
+                "responsive": true,
+                "autoWidth": true
+            });
+        });
+    </script>
+{% endblock %}

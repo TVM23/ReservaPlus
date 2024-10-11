@@ -47,6 +47,7 @@
                         </ul>
                     </li>
                     <li class="navbar-item"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
+                    <li class="navbar-item"><a href="{% url 'usuario_list' %}">Usuarios</a></li>
                     <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
                     {% if request.user.is_authenticated %}
                         <li class="navbar-item dropdown">

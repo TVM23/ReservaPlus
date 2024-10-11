@@ -5,13 +5,13 @@
 {% block content %}
 
 <div class="logout-container text-center" style="font-size: 6rem;">
-    <div class="form-register">
-        <h1 class="mb-5" style="font-weight: 900; font-size: 3rem;">¿QUIERES CERRAR SESIÓN?</h1>
+    <div class="form-register" style="max-width: 900px">
+        <h1 class="mb-5" style="font-weight: 900; font-size: 6rem;">¿QUIERES CERRAR SESIÓN?</h1>
         <form method="POST">
         {% csrf_token %}
         <div class="d-grid gap-5 d-sm-flex justify-content-sm-center">
-            <button type="submit" class="btn btn-danger btn-lg me-3" style="padding: 1rem 3rem; font-size: 1.5rem;">SÍ, CERRAR SESIÓN</button>
-            <a href="{% url 'home' %}" class="btn btn-secondary btn-lg" style="padding: 1rem 3rem; font-size: 1.5rem;">NO, REGRESAR</a>
+            <button type="submit" class="btn btn-danger btn-lg me-3" style="padding: 1rem 3rem; font-size: 2rem;">SÍ, CERRAR SESIÓN</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary btn-lg" style="padding: 1rem 3rem; font-size: 2rem;">NO, REGRESAR</a>
         </div>
         </form>
     </div>

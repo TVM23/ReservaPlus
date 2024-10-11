@@ -28,6 +28,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+LOGIN_URL = '/Usuarios/login/'
+
 INSTALLED_APPS = [
     'HotelApp',
     'Usuarios',
