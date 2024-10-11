@@ -62,23 +62,19 @@
             const previewCont = document.getElementById('preview-imagen-container');
             const brimgPrevio = document.getElementById('br-imgPrevio')
 
-            // Verifica si se seleccionó un archivo
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
-                // Evento cuando el archivo es cargado
                 reader.onload = function (e) {
-                    preview.src = e.target.result; // Asigna el src de la vista previa
-                    preview.classList.remove('d-none'); // Muestra la imagen previa
-                    previewText.classList.remove('d-none'); // Muestra la imagen previa
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                    previewText.classList.remove('d-none');
                     previewCont.classList.remove('d-none');
                     brimgPrevio.classList.remove('d-none')
                 }
 
-                // Lee el archivo como DataURL
                 reader.readAsDataURL(input.files[0]);
             } else {
-                // Si no se selecciona un archivo, muestra la imagen actual y oculta la vista previa
                 preview.src = '#';
                 preview.classList.add('d-none');
                 previewText.classList.add('d-none');

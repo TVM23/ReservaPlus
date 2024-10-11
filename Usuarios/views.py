@@ -19,15 +19,14 @@ class RegistroView(View):
         password = request.POST['password']
         email = request.POST['email']
 
-        # Crear el usuario con firstname y lastname
         try:
             user = User.objects.create_user(username=username, password=password, email=email)
             user.first_name = firstname
             user.last_name = lastname
-            user.is_active = True  # Asegúrate de que el usuario esté activo
+            user.is_active = True
             user.save()
             messages.success(request, 'Registro exitoso. Puedes iniciar sesión ahora.')
-            return redirect('home')
+            return redirect('login')
         except Exception as e:
             messages.error(request, f'Error en el registro: {e}')
             return render(request, 'registro.html')
@@ -63,7 +62,6 @@ def logout_view(request):
 
 @login_required
 def user_profile(request):
-    # El usuario que está autenticado puede acceder aquí
     user = request.user
     return render(request, 'user_profile.html', {'user': user})
 
@@ -78,11 +76,9 @@ def usuario_list(request):
 def toggle_usuario_status(request, user_id):
     usuario = get_object_or_404(User, id=user_id)
 
-    # Cambiar el estado de is_active
     usuario.is_active = not usuario.is_active
     usuario.save()
 
-    # Redirigir de nuevo a la lista de usuarios
     return redirect('usuario_list')
 
 
@@ -99,7 +95,6 @@ def Registro(request):
             user = User.objects.create_user(first_name=firstname, last_name=lastname, username=username,
                                             password=password, email=email)
 
-            # Asignar permisos según los checkboxes
             if is_admin == 'on':
                 user.is_staff = True
                 user.is_superuser = True
@@ -108,12 +103,12 @@ def Registro(request):
                 user.is_superuser = False
             else:
                 user.is_staff = False
-                user.is_superuser = False  # Cliente
+                user.is_superuser = False
 
             user.save()
 
             messages.success(request, 'Registro exitoso. Puedes iniciar sesión ahora.')
-            return redirect('login')
+            return redirect('usuario_list')
         except Exception as e:
             messages.error(request, f'Error en el registro: {e}')
             return render(request, 'registro.html')
