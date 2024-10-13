@@ -430,5 +430,11 @@ p a:hover {
     color: #555;
 }
 
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
 /* FIN DE PESTAÑA DE INFORMACIÓN DE USUARIO */
 

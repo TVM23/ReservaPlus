@@ -16,6 +16,7 @@ urlpatterns = [
     path('servicios/', listar_servicios_view, name='listar_servicios'),
     path('servicios/actualizar/<int:pk>/', actualizar_servicio_view, name='actualizar_servicio'),
     path('servicios/eliminar/<int:pk>/', eliminar_servicio_view, name='eliminar_servicio'),
+path('servicios-cartas/', views.servicios_cartas, name='servicios_cartas'),
     # Asegúrate de agregar otras rutas, como la de la lista de habitaciones
 
     path('', redirect_to_home, name='redirect_to_home'),  # Redirigir desde la raíz

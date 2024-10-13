@@ -163,3 +163,8 @@ def eliminar_servicio_view(request, pk):
         messages.success(request, 'Servicio eliminado exitosamente.')
         return redirect('listar_servicios')
     return render(request, 'eliminar_servicio.html', {'servicio': servicio})
+
+
+def servicios_cartas(request):
+    servicios = Servicios.objects.all()
+    return render(request, 'servicios_cartas.html', {'servicios': servicios})
