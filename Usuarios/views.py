@@ -7,6 +7,12 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import UserUpdateForm, CustomPasswordChangeForm
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth import update_session_auth_hash
 
 class RegistroView(View):
     def get(self, request):
@@ -115,3 +121,25 @@ def Registro(request):
 
     return render(request, 'registro2.html')
 
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'actualiza_datos_perfil.html'
+    success_url = reverse_lazy('user_profile')
+
+    # Sobrescribimos este método para asegurarnos de que solo el usuario actual puede editar sus datos
+    def get_object(self, queryset=None):
+        return self.request.user
+
+class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'cambiar_password.html'
+    success_url = reverse_lazy('user_profile')
+    success_message = "Tu contraseña ha sido cambiada exitosamente."
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # Asegúrate de que la sesión no se cierre después de cambiar la contraseña
+        update_session_auth_hash(self.request, form.user)
+        messages.success(self.request, 'Tu contraseña ha sido actualizada exitosamente.')
+        return response
