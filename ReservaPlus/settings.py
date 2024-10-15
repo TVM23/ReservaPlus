@@ -33,6 +33,7 @@ LOGIN_URL = '/Usuarios/login/'
 INSTALLED_APPS = [
     'HotelApp',
     'Usuarios',
+    'Reservas',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

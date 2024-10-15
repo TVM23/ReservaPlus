@@ -60,27 +60,34 @@ def home(request):
 """"""
 
 def agregar_detalle_habitacion(request):
-    if request.method == "POST":
-        habitacion_id = request.POST.get('habitacion')
-        habitacion = Habitacion.objects.get(id=habitacion_id)
-        ubicacion = request.POST.get('ubicacion')
-        ventanas = request.POST.get('ventanas')
-        camas = request.POST.get('camas')
-        numero_de_camas = request.POST.get('numero_de_camas')
-        aire_acondicionado = 'aire_acondicionado' in request.POST
-        jacuzzi = 'jacuzzi' in request.POST
+    if request.method == 'POST':
+        habitacion_id = request.POST['habitacion']
+        ubicacion = request.POST['ubicacion']
+        ventanas = bool(request.POST.get('ventanas', False))
+        camas = request.POST['camas']
+        numero_de_camas = request.POST['numero_de_camas']
+        aire_acondicionado = bool(request.POST.get('aire_acondicionado', False))
+        jacuzzi = bool(request.POST.get('jacuzzi', False))
+        numero_de_habitacion = request.POST['Numero_de_habitacion']
+        habitaciones_disponibles = request.POST['habitaciones_disponibles']
 
-        DetalleHabitacion.objects.create(
+        habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+        # Crear el detalle de la habitación
+        detalle = DetalleHabitacion.objects.create(
             habitacion=habitacion,
             ubicacion=ubicacion,
             ventanas=ventanas,
             camas=camas,
             numero_de_camas=numero_de_camas,
             aire_acondicionado=aire_acondicionado,
-            jacuzzi=jacuzzi
+            jacuzzi=jacuzzi,
+            Numero_de_habitacion=numero_de_habitacion,
+            habitaciones_disponibles=habitaciones_disponibles
         )
+        detalle.save()
 
-        return redirect('lista_detalles_habitacion')
+        return redirect('lista_detalles_habitacion')  # Redirigir a la lista de detalles de habitaciones
 
     habitaciones = Habitacion.objects.all()
     return render(request, 'agregar_detalle_habitacion.html', {'habitaciones': habitaciones})
@@ -101,6 +108,8 @@ def editar_detalle_habitacion(request, id):
         detalle.ventanas = request.POST.get('ventanas')
         detalle.camas = request.POST.get('camas')
         detalle.numero_de_camas = request.POST.get('numero_de_camas')
+        detalle.Numero_de_habitacion = request.POST.get('Numero_de_habitacion')
+        detalle.habitaciones_disponibles = request.POST.get('habitaciones_disponibles')
         detalle.aire_acondicionado = 'aire_acondicionado' in request.POST
         detalle.jacuzzi = 'jacuzzi' in request.POST
         detalle.save()
@@ -108,7 +117,10 @@ def editar_detalle_habitacion(request, id):
         return redirect('lista_detalles_habitacion')
 
     habitaciones = Habitacion.objects.all()
-    return render(request, 'editar_detalle_habitacion.html', {'detalle': detalle, 'habitaciones': habitaciones})
+    return render(request, 'editar_detalle_habitacion.html', {
+        'detalle': detalle,
+        'habitaciones': habitaciones
+    })
 
 def eliminar_detalle_habitacion(request, id):
     detalle = get_object_or_404(DetalleHabitacion, id=id)
@@ -123,8 +135,9 @@ def crear_servicio_view(request):
         descripcion = request.POST['descripcion']
         imagen = request.FILES.get('imagen')
         disponibilidad = request.POST.get('disponibilidad') == 'on'  # Convertir a boolean
+        precio = request.POST['precio']
 
-        servicio = Servicios(nombre=nombre, descripcion=descripcion, imagen=imagen, disponibilidad=disponibilidad)
+        servicio = Servicios(nombre=nombre, descripcion=descripcion, imagen=imagen, disponibilidad=disponibilidad, precio=precio)
         servicio.save()
         messages.success(request, 'Servicio creado exitosamente.')
         return redirect('listar_servicios')
@@ -148,6 +161,7 @@ def actualizar_servicio_view(request, pk):
         if 'imagen' in request.FILES:
             servicio.imagen = request.FILES['imagen']
         servicio.disponibilidad = request.POST.get('disponibilidad') == 'on'
+        servicio.precio = request.POST['precio']
         servicio.save()
         messages.success(request, 'Servicio actualizado exitosamente.')
         return redirect('listar_servicios')

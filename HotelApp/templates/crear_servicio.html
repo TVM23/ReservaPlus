@@ -26,6 +26,11 @@
                     <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
                 </div>
 
+                <div class="mb-3 form-group">
+                    <label for="precio" class="form-label">Precio:</label> <!-- Nuevo campo para precio -->
+                    <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0" required>
+                </div>
+
                 <div class="form-check mb-3">
                     <label for="disponibilidad" class="form-check-label">Disponibilidad</label>
                     <input type="checkbox" class="form-check-input" id="disponibilidad" name="disponibilidad">
@@ -33,14 +38,17 @@
 
                 <div class="mb-3 form-group">
                     <label for="imagen" class="form-label">Imagen:</label>
-                    <input type="file" class="form-control" id="imagen" name="imagen" accept="image/png,image/gif,image/jpeg" required>
+                    <input type="file" class="form-control" id="imagen" name="imagen"
+                           accept="image/png,image/gif,image/jpeg" required>
                 </div>
 
                 <div class="mb-3 form-group">
                     <div class="text-center d-none" id="preview-imagen-container">
                         <label for="imagen" id="preview-imagen-text" class="d-none">Vista previa:</label><br>
-                        <img id="preview-imagen" src="#" alt="Vista previa de la nueva imagen" class="img-fluid rounded d-none" style="max-width: 200px; height: 125px;">
-                    </div><br id="br-imgPrevio" class="d-none">
+                        <img id="preview-imagen" src="#" alt="Vista previa de la nueva imagen"
+                             class="img-fluid rounded d-none" style="max-width: 200px; height: 125px;">
+                    </div>
+                    <br id="br-imgPrevio" class="d-none">
                 </div>
 
                 <div class="mb-3 form-group">
@@ -49,6 +57,7 @@
             </form>
         </div>
     </div>
+
 
 
     <script>

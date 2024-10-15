@@ -13,30 +13,38 @@
                 {% csrf_token %}
                 <div class="mb-3 form-group">
                     <label for="nombre" class="form-label">Nombre:</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre"
-                           value="{{ servicio.nombre }}" required>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ servicio.nombre }}"
+                           required>
                 </div>
 
                 <div class="mb-3 form-group">
                     <label for="descripcion" class="form-label">Descripción:</label>
-                    <textarea class="form-control" id="descripcion" name="descripcion" required>{{ servicio.descripcion }}
-                    </textarea>
+                    <textarea class="form-control" id="descripcion" name="descripcion"
+                              required>{{ servicio.descripcion }}</textarea>
+                </div>
+
+                <div class="mb-3 form-group">
+                    <label for="precio" class="form-label">Precio:</label> <!-- Nuevo campo para precio -->
+                    <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0"
+                           value="{{ servicio.precio }}" required>
                 </div>
 
                 <div class="form-check mb-3">
                     <label for="disponibilidad" class="form-check-label">Disponibilidad</label>
                     <input type="checkbox" class="form-check-input" id="disponibilidad" name="disponibilidad"
-                    {% if servicio.disponibilidad %}checked{% endif %}>
+                           {% if servicio.disponibilidad %}checked{% endif %}>
                 </div>
 
                 <div class="mb-3 text-center">
                     <label for="imagen">Imagen Actual:</label><br>
-                    <img id="imagen-actual" src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}" class="img-fluid rounded" style="max-width: 200px; height: 125px;"><br>
+                    <img id="imagen-actual" src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre }}"
+                         class="img-fluid rounded" style="max-width: 200px; height: 125px;"><br>
                 </div>
 
                 <div class="mb-3 form-group">
                     <label for="imagen" class="form-label">Subir Nueva Imagen:</label>
-                    <input type="file" class="form-control" id="imagen" name="imagen" accept="image/png,image/gif,image/jpeg">
+                    <input type="file" class="form-control" id="imagen" name="imagen"
+                           accept="image/png,image/gif,image/jpeg">
                 </div>
 
                 <div class="mb-3 form-group">
@@ -44,7 +52,8 @@
                         <label for="imagen" id="preview-imagen-text" class="d-none">Vista previa:</label><br>
                         <img id="preview-imagen" src="#" alt="Vista previa de la nueva imagen"
                              class="img-fluid rounded d-none" style="max-width: 200px; height: 125px;">
-                    </div><br id="br-imgPrevio" class="d-none">
+                    </div>
+                    <br id="br-imgPrevio" class="d-none">
                 </div>
 
                 <div class="mb-3 form-group">
@@ -53,6 +62,7 @@
             </form>
         </div>
     </div>
+
 
     <script>
         document.getElementById('imagen').addEventListener('change', function (event) {

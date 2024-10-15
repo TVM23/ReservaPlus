@@ -18,6 +18,8 @@ class DetalleHabitacion(models.Model):
     numero_de_camas = models.IntegerField()
     aire_acondicionado = models.BooleanField(default=False)
     jacuzzi = models.BooleanField(default=False)
+    Numero_de_habitacion = models.IntegerField(unique=True)
+    habitaciones_disponibles = models.IntegerField(default=1)
 
     def __str__(self):
         return f"Detalle de {self.habitacion.nombre}"
@@ -27,6 +29,7 @@ class Servicios(models.Model):
     descripcion = models.TextField()
     imagen = models.ImageField(upload_to='servicios/', null=True, blank=True)
     disponibilidad=models.BooleanField(default=False)
+    precio = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     def __str__(self):
         return self.nombre

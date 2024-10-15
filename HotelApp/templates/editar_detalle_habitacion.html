@@ -13,7 +13,7 @@
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="habitacion" class="form-label">Habitación:</label>
-                     <select name="habitacion" id="habitacion" class="form-control">
+                    <select name="habitacion" id="habitacion" class="form-control">
                         {% for habitacion in habitaciones %}
                             <option value="{{ habitacion.id }}"
                                     {% if habitacion.id == detalle.habitacion.id %}selected{% endif %}>{{ habitacion.nombre }}</option>
@@ -23,40 +23,58 @@
 
                 <div class="mb-3">
                     <label for="ubicacion" class="form-label">Ubicación:</label>
-                    <input type="text" name="ubicacion" id="ubicacion" value="{{ detalle.ubicacion }}" class="form-control"
+                    <input type="text" name="ubicacion" id="ubicacion" value="{{ detalle.ubicacion }}"
+                           class="form-control"
                            required>
                 </div>
 
                 <div class="mb-3">
                     <label for="ventanas">Número de ventanas:</label>
-                    <input type="number" name="ventanas" id="ventanas" value="{{ detalle.ventanas }}" class="form-control"
-                       required>
+                    <input type="number" name="ventanas" id="ventanas" value="{{ detalle.ventanas }}"
+                           class="form-control"
+                           required>
                 </div>
 
                 <div class="mb-3">
                     <label for="camas">Tipo de camas:</label>
                     <input type="text" name="camas" id="camas" value="{{ detalle.camas }}" class="form-control"
-                       required>
+                           required>
                 </div>
 
                 <div class="mb-3">
                     <label for="numero_de_camas">Número de camas:</label>
-                    <input type="number" name="numero_de_camas" id="numero_de_camas" value="{{ detalle.numero_de_camas }}" class="form-control"
-                       required>
+                    <input type="number" name="numero_de_camas" id="numero_de_camas"
+                           value="{{ detalle.numero_de_camas }}" class="form-control"
+                           required>
+                </div>
+
+                <!-- Campo adicional: Número de habitación -->
+                <div class="mb-3">
+                    <label for="Numero_de_habitacion">Número de habitación:</label>
+                    <input type="number" name="Numero_de_habitacion" id="Numero_de_habitacion"
+                           value="{{ detalle.Numero_de_habitacion }}" class="form-control" required>
+                </div>
+
+                <!-- Campo adicional: Habitaciones disponibles -->
+                <div class="mb-3">
+                    <label for="habitaciones_disponibles">Habitaciones disponibles:</label>
+                    <input type="number" name="habitaciones_disponibles" id="habitaciones_disponibles"
+                           value="{{ detalle.habitaciones_disponibles }}" class="form-control" required>
                 </div>
 
                 <div class="form-check mb-3">
                     <label class="form-check-label" for="aire_acondicionado">Aire acondicionado</label>
-                    <input type="checkbox" class="form-check-input"  name="aire_acondicionado" id="aire_acondicionado"
-                       {% if detalle.aire_acondicionado %}checked{% endif %}>
+                    <input type="checkbox" class="form-check-input" name="aire_acondicionado" id="aire_acondicionado"
+                           {% if detalle.aire_acondicionado %}checked{% endif %}>
                 </div>
 
                 <div class="form-check mb-3">
                     <label class="form-check-label" for="jacuzzi">Jacuzzi</label>
-                    <input class="form-check-input" type="checkbox" name="jacuzzi" id="jacuzzi" {% if detalle.jacuzzi %}checked{% endif %}>
+                    <input class="form-check-input" type="checkbox" name="jacuzzi" id="jacuzzi"
+                           {% if detalle.jacuzzi %}checked{% endif %}>
                 </div>
 
-                <button type="submit"  class="btn btn-primary w-100">Actualizar detalle</button>
+                <button type="submit" class="btn btn-primary w-100">Actualizar detalle</button>
             </form>
         </div>
     </div>

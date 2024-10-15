@@ -26,6 +26,8 @@
                     <th>Ventanas</th>
                     <th>Camas</th>
                     <th>Núm. de camas</th>
+                    <th>Núm. de habitación</th> <!-- Nueva columna -->
+                    <th>Habitaciones disponibles</th> <!-- Nueva columna -->
                     <th>A/C</th>
                     <th>Jacuzzi</th>
                     <th>Acciones</th>
@@ -39,6 +41,8 @@
                         <td>{{ detalle.ventanas }}</td>
                         <td>{{ detalle.camas }}</td>
                         <td>{{ detalle.numero_de_camas }}</td>
+                        <td>{{ detalle.Numero_de_habitacion }}</td> <!-- Nueva celda -->
+                        <td>{{ detalle.habitaciones_disponibles }}</td> <!-- Nueva celda -->
                         {% if detalle.aire_acondicionado %}
                             <td>Si</td>
                         {% else %}
@@ -51,8 +55,10 @@
                         {% endif %}
                         <td>
                             <div class="text-center">
-                                <a href="{% url 'editar_detalle_habitacion' detalle.id %}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Editar</a>
-                                <a href="{% url 'eliminar_detalle_habitacion' detalle.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                                <a href="{% url 'editar_detalle_habitacion' detalle.id %}"
+                                   class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Editar</a>
+                                <a href="{% url 'eliminar_detalle_habitacion' detalle.id %}"
+                                   class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Eliminar</a>
                             </div>
                         </td>
                     </tr>
@@ -61,12 +67,13 @@
             </table>
         </div>
     </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
     <!-- Inicializar DataTables -->
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#detalle-habitaciones-table').DataTable({
                 "language": {
                     "decimal": ",",
