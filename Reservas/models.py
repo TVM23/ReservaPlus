@@ -1,12 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 
 
 # Create your models here.
 
 class Reserva(models.Model):
-    fecha_inicio_reserva = models.TimeField()
-    fecha_final_reserva = models.TimeField()
+    fecha_inicio_reserva = models.DateTimeField(default=datetime.now)
+    fecha_final_reserva = models.DateTimeField(default=datetime.now)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Relación con el modelo User
     estado = models.CharField(max_length=50)  # Cambia el tamaño según necesites
     Numero_de_habitacion = models.IntegerField(unique=True)
