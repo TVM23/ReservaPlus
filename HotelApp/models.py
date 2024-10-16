@@ -19,7 +19,7 @@ class DetalleHabitacion(models.Model):
     aire_acondicionado = models.BooleanField(default=False)
     jacuzzi = models.BooleanField(default=False)
     Numero_de_habitacion = models.IntegerField(unique=True)
-    habitaciones_disponibles = models.IntegerField(default=1)
+    disponibilidad = models.CharField(max_length=20, default='disponible')
 
     def __str__(self):
         return f"Detalle de {self.habitacion.nombre}"

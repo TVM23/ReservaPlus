@@ -27,9 +27,10 @@
                     <th>Camas</th>
                     <th>Núm. de camas</th>
                     <th>Núm. de habitación</th> <!-- Nueva columna -->
-                    <th>Habitaciones disponibles</th> <!-- Nueva columna -->
+                    <!-- Nueva columna -->
                     <th>A/C</th>
                     <th>Jacuzzi</th>
+                    <th>Disponibilidad</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -42,7 +43,7 @@
                         <td>{{ detalle.camas }}</td>
                         <td>{{ detalle.numero_de_camas }}</td>
                         <td>{{ detalle.Numero_de_habitacion }}</td> <!-- Nueva celda -->
-                        <td>{{ detalle.habitaciones_disponibles }}</td> <!-- Nueva celda -->
+
                         {% if detalle.aire_acondicionado %}
                             <td>Si</td>
                         {% else %}
@@ -53,6 +54,7 @@
                         {% else %}
                             <td>No</td>
                         {% endif %}
+                        <td>{{ detalle.disponibilidad }}</td>
                         <td>
                             <div class="text-center">
                                 <a href="{% url 'editar_detalle_habitacion' detalle.id %}"

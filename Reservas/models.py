@@ -9,6 +9,7 @@ class Reserva(models.Model):
     fecha_final_reserva = models.TimeField()
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # Relación con el modelo User
     estado = models.CharField(max_length=50)  # Cambia el tamaño según necesites
+    Numero_de_habitacion = models.IntegerField(unique=True)
     costo = models.FloatField()
 
     def __str__(self):

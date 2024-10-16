@@ -63,13 +63,12 @@ def agregar_detalle_habitacion(request):
     if request.method == 'POST':
         habitacion_id = request.POST['habitacion']
         ubicacion = request.POST['ubicacion']
-        ventanas = bool(request.POST.get('ventanas', False))
+        ventanas = request.POST.get('ventanas', 0)  # Asegurarse de que el valor sea un entero
         camas = request.POST['camas']
         numero_de_camas = request.POST['numero_de_camas']
-        aire_acondicionado = bool(request.POST.get('aire_acondicionado', False))
-        jacuzzi = bool(request.POST.get('jacuzzi', False))
+        aire_acondicionado = 'aire_acondicionado' in request.POST  # Verifica si está presente en el POST
+        jacuzzi = 'jacuzzi' in request.POST  # Verifica si está presente en el POST
         numero_de_habitacion = request.POST['Numero_de_habitacion']
-        habitaciones_disponibles = request.POST['habitaciones_disponibles']
 
         habitacion = get_object_or_404(Habitacion, id=habitacion_id)
 
@@ -82,8 +81,7 @@ def agregar_detalle_habitacion(request):
             numero_de_camas=numero_de_camas,
             aire_acondicionado=aire_acondicionado,
             jacuzzi=jacuzzi,
-            Numero_de_habitacion=numero_de_habitacion,
-            habitaciones_disponibles=habitaciones_disponibles
+            Numero_de_habitacion=numero_de_habitacion
         )
         detalle.save()
 
@@ -105,11 +103,10 @@ def editar_detalle_habitacion(request, id):
         habitacion_id = request.POST.get('habitacion')
         detalle.habitacion = Habitacion.objects.get(id=habitacion_id)
         detalle.ubicacion = request.POST.get('ubicacion')
-        detalle.ventanas = request.POST.get('ventanas')
+        detalle.ventanas = request.POST.get('ventanas', 0)  # Asegurarse de que el valor sea un entero
         detalle.camas = request.POST.get('camas')
         detalle.numero_de_camas = request.POST.get('numero_de_camas')
         detalle.Numero_de_habitacion = request.POST.get('Numero_de_habitacion')
-        detalle.habitaciones_disponibles = request.POST.get('habitaciones_disponibles')
         detalle.aire_acondicionado = 'aire_acondicionado' in request.POST
         detalle.jacuzzi = 'jacuzzi' in request.POST
         detalle.save()
