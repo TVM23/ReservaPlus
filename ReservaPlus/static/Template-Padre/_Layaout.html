@@ -68,7 +68,9 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'user_profile' %}">Datos del usuario</a></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}" data-bs-toggle="modal"
+                                   data-bs-target="#logoutModal">Cerrar Sesión</a></li>
+
                         </ul>
                     </li>
                 {% else %}
@@ -94,6 +96,28 @@
             {% endblock %}
         </main>
     </div>
+
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Cerrar Sesión</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro que quieres cerrar sesión?</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, cerrar sesión</button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, regresar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <footer class="footer">

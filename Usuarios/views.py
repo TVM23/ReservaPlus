@@ -10,32 +10,37 @@ from django.contrib.auth import logout
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import UserUpdateForm, CustomPasswordChangeForm
+from .forms import UserUpdateForm, CustomPasswordChangeForm, CustomUserCreationFormRegister
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import update_session_auth_hash
+from .forms import CustomUserCreationForm
 
 class RegistroView(View):
     def get(self, request):
-        return render(request, 'registro.html')
+        form = CustomUserCreationFormRegister()
+        return render(request, 'registro.html', {'form': form})
 
     def post(self, request):
-        firstname = request.POST['firstname']
-        lastname = request.POST['lastname']
-        username = request.POST['username']
-        password = request.POST['password']
-        email = request.POST['email']
-
-        try:
-            user = User.objects.create_user(username=username, password=password, email=email)
-            user.first_name = firstname
-            user.last_name = lastname
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
             user.is_active = True
             user.save()
-            messages.success(request, 'Registro exitoso. Puedes iniciar sesión ahora.')
-            return redirect('login')
-        except Exception as e:
-            messages.error(request, f'Error en el registro: {e}')
-            return render(request, 'registro.html')
+
+            # Opcional: Autenticar e iniciar sesión después del registro
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            if user is not None:
+                login(request, user)
+
+            messages.success(request, 'Registro con éxito. Bienvenido')
+            return redirect('home')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error}")
+            return render(request, 'registro.html', {'form': form})
 
 class LoginView(View):
     def get(self, request):
@@ -87,7 +92,7 @@ def toggle_usuario_status(request, user_id):
 
     return redirect('usuario_list')
 
-
+"""
 def Registro(request):
     if request.method == 'POST':
         firstname = request.POST['firstname']
@@ -121,6 +126,41 @@ def Registro(request):
 
     return render(request, 'registro2.html')
 
+"""
+
+def Registro(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+
+            is_empleado = form.cleaned_data.get('is_empleado')
+            is_admin = form.cleaned_data.get('is_admin')
+
+            if is_admin:
+                user.is_staff = True
+                user.is_superuser = True
+            elif is_empleado:
+                user.is_staff = True
+                user.is_superuser = False
+            else:
+                user.is_staff = False
+                user.is_superuser = False
+
+            user.save()
+
+            messages.success(request, 'Registro exitoso. Puedes iniciar sesión ahora.')
+            return redirect('usuario_list')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error}")
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'registro2.html', {'form': form})
+
+
 class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserUpdateForm
@@ -139,7 +179,6 @@ class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        # Asegúrate de que la sesión no se cierre después de cambiar la contraseña
         update_session_auth_hash(self.request, form.user)
         messages.success(self.request, 'Tu contraseña ha sido actualizada exitosamente.')
         return response
