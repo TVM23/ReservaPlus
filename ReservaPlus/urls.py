@@ -27,6 +27,7 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('HotelApp/', include('HotelApp.urls')),
                   path('Usuarios/', include('Usuarios.urls')),
+                  path('Reservas/', include('Reservas.urls')),
                   path('get-response/', chatbot_response, name='chatbot_response'),
                   path('', redirect_to_home),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

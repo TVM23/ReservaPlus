@@ -179,3 +179,36 @@ def eliminar_servicio_view(request, pk):
 def servicios_cartas(request):
     servicios = Servicios.objects.all()
     return render(request, 'servicios_cartas.html', {'servicios': servicios})
+
+
+##
+def lista_habitaciones2(request):
+    # Obtener todas las habitaciones con su primer detalle
+    habitaciones = Habitacion.objects.prefetch_related('detallehabitacion_set')
+
+    # Preparar un diccionario para mostrar solo un detalle por habitación
+    habitaciones_con_detalle = []
+    for habitacion in habitaciones:
+        primer_detalle = habitacion.detallehabitacion_set.first()
+        habitaciones_con_detalle.append((habitacion, primer_detalle))
+
+    return render(request, 'lista_habitaciones2.html', {'habitaciones_con_detalle': habitaciones_con_detalle})
+
+
+def detalle_habitacion(request, habitacion_id):
+    habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+    # Obtener el primer detalle de la habitación que esté disponible
+    detalle = DetalleHabitacion.objects.filter(habitacion=habitacion, disponibilidad='disponible').first()
+
+    # Verifica si hay detalle disponible y obtiene el numero_de_habitacion
+    if detalle:
+        numero_de_habitacion = detalle.Numero_de_habitacion
+    else:
+        numero_de_habitacion = None  # Manejo en caso de que no haya detalles disponibles
+
+    return render(request, 'detalle_habitacion.html', {
+        'habitacion': habitacion,
+        'detalle': detalle,
+        'numero_de_habitacion': numero_de_habitacion,  # Incluye el número de habitación
+    })

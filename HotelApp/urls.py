@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import agregar_habitacion, lista_habitaciones, editar_habitacion, eliminar_habitacion, home, \
-    redirect_to_home, crear_servicio_view, listar_servicios_view, actualizar_servicio_view, eliminar_servicio_view
+    redirect_to_home, crear_servicio_view, listar_servicios_view, actualizar_servicio_view, eliminar_servicio_view,lista_habitaciones2,detalle_habitacion
 from . import views
 
 urlpatterns = [
@@ -16,7 +16,9 @@ urlpatterns = [
     path('servicios/', listar_servicios_view, name='listar_servicios'),
     path('servicios/actualizar/<int:pk>/', actualizar_servicio_view, name='actualizar_servicio'),
     path('servicios/eliminar/<int:pk>/', eliminar_servicio_view, name='eliminar_servicio'),
-path('servicios-cartas/', views.servicios_cartas, name='servicios_cartas'),
+    path('servicios-cartas/', views.servicios_cartas, name='servicios_cartas'),
+    path('lista_habitaciones/', lista_habitaciones2, name='lista_habitaciones2'),
+    path('habitaciones/<int:habitacion_id>/', detalle_habitacion, name='detalle_habitacion'),
     # Asegúrate de agregar otras rutas, como la de la lista de habitaciones
 
     path('', redirect_to_home, name='redirect_to_home'),  # Redirigir desde la raíz

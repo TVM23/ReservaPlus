@@ -16,6 +16,7 @@ class Reserva(models.Model):
         return f"Reserva {self.id} - {self.usuario.username} ({self.fecha_inicio_reserva} a {self.fecha_final_reserva})"
 
 
+
 class HabitacionesReservas(models.Model):
     reserva = models.ForeignKey(Reserva, on_delete=models.CASCADE)  # ForeignKey hacia Reserva
     habitacion = models.ForeignKey('HotelApp.Habitacion',

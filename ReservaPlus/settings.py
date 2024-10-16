@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 from django.core.validators import RegexValidator
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -64,6 +63,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'HotelApp', 'templates'),  # Ruta a las plantillas de HotelApp
             os.path.join(BASE_DIR, 'ReservaPlus', 'static/Template-Padre'),
             os.path.join(BASE_DIR, 'Usuarios', 'templates'),
+            os.path.join(BASE_DIR, 'Reservas', 'templates'),
 
         ]
         ,

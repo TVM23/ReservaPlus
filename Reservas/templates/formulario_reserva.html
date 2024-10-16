@@ -1,0 +1,39 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Formulario de Reserva{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Reservar {{ habitacion.nombre }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+        </div>
+        <div class="mb-3">
+            <label for="fecha_final" class="form-label">Fecha Final</label>
+            <input type="date" class="form-control" id="fecha_final" name="fecha_final" required>
+        </div>
+        <div class="mb-3">
+            <label for="numero_personas" class="form-label">Número de Personas</label>
+            <input type="number" class="form-control" id="numero_personas" name="numero_personas" min="1" max="{{ habitacion.cupo }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Servicios Adicionales</label>
+            <div>
+                {% for servicio in servicios %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="servicio_{{ servicio.id }}" name="servicios" value="{{ servicio.id }}">
+                        <label class="form-check-label" for="servicio_{{ servicio.id }}">
+                            {{ servicio.nombre }} - ${{ servicio.precio }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Reservar</button>
+    </form>
+    <a href="{% url 'lista_habitaciones2' %}" class="btn btn-secondary">Volver a Habitaciones</a>
+</div>
+{% endblock %}

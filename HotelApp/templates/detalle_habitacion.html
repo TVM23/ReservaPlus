@@ -1,0 +1,38 @@
+{% extends '_Layaout.html' %}
+
+
+
+{% block title %}Lista de Servicios - Reservas Plus{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="text-center">{{ habitacion.nombre }}</h1>
+
+        {% if detalle %}
+            <div class="mb-4">
+                <h4>Detalles de la Habitación</h4>
+                <p><strong>Ubicación:</strong> {{ detalle.ubicacion }}</p>
+                <p><strong>Número de Ventanas:</strong> {{ detalle.ventanas }}</p>
+                <p><strong>Camas:</strong> {{ detalle.camas }}</p>
+                <p><strong>Número de Camas:</strong> {{ detalle.numero_de_camas }}</p>
+                <p><strong>Aire Acondicionado:</strong> {% if detalle.aire_acondicionado %}Sí{% else %}No{% endif %}</p>
+                <p><strong>Jacuzzi:</strong> {% if detalle.jacuzzi %}Sí{% else %}No{% endif %}</p>
+                <p><strong>Número de Habitación:</strong> {{ detalle.Numero_de_habitacion }}</p>
+                <p><strong>Disponibilidad:</strong> {{ detalle.disponibilidad }}</p>
+            </div>
+        {% else %}
+            <p>No hay detalles disponibles para esta habitación.</p>
+        {% endif %}
+
+        <a href="{% url 'lista_habitaciones2' %}" class="btn btn-secondary">Volver a Habitaciones</a>
+        <a href="{% url 'formulario_reserva' habitacion.id detalle.Numero_de_habitacion %}" class="btn btn-success">Reservar</a>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+{% endblock %}
