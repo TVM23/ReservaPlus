@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Reservas Plus{% endblock %}</title>
 
+     <!-- Cosas del ojo -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <!-- Fuentes de Google -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
@@ -136,6 +139,7 @@
 
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
+
 <!-- Chatbot -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -200,7 +204,76 @@
         }
     });
 </script>
+<!-- OJO del password -->
 
+   <script>
+    // Obtener los campos de entrada y sus íconos
+    const passwordInput = document.getElementById('password'); // Primer campo
+    const togglePasswordIcon = document.getElementById('togglePassword');
+
+    const passwordInput1 = document.getElementById('password1_input'); // Segundo campo (password1)
+    const togglePasswordIcon1 = document.getElementById('togglePassword1');
+
+    const passwordInput2 = document.getElementById('password2_input'); // Tercer campo (password2)
+    const togglePasswordIcon2 = document.getElementById('togglePassword2');
+
+     const oldPasswordInput = document.getElementById('old_password_input'); // Contraseña actual
+    const toggleOldPasswordIcon = document.getElementById('toggleOldPassword');
+
+    const newPassword1 = document.getElementById('id_new_password1'); // Nueva contraseña
+    const toggleNewPassword1Icon = document.getElementById('toggleNewPassword1');
+
+    const newPassword2 = document.getElementById('id_new_password2'); // Confirmar nueva contraseña
+    const toggleNewPassword2Icon = document.getElementById('toggleNewPassword2');
+
+    // Función para alternar la visibilidad de la contraseña
+    function togglePassword(inputField, toggleIcon) {
+        const type = inputField.type === 'password' ? 'text' : 'password';
+        inputField.type = type;
+
+        // Alternar el ícono entre ojo abierto y ojo cerrado
+        toggleIcon.classList.toggle('fa-eye');
+        toggleIcon.classList.toggle('fa-eye-slash');
+    }
+
+    // Agregar eventos a los íconos de toggle
+    if (passwordInput && togglePasswordIcon) {
+        togglePasswordIcon.addEventListener('click', function() {
+            togglePassword(passwordInput, togglePasswordIcon);
+        });
+    }
+
+    if (passwordInput1 && togglePasswordIcon1) {
+        togglePasswordIcon1.addEventListener('click', function() {
+            togglePassword(passwordInput1, togglePasswordIcon1);
+        });
+    }
+
+    if (passwordInput2 && togglePasswordIcon2) {
+        togglePasswordIcon2.addEventListener('click', function() {
+            togglePassword(passwordInput2, togglePasswordIcon2);
+        });
+    }
+
+    // Agregar eventos a los íconos de toggle
+    if (oldPasswordInput && toggleOldPasswordIcon) {
+        toggleOldPasswordIcon.addEventListener('click', function() {
+            togglePassword(oldPasswordInput, toggleOldPasswordIcon);
+        });
+    }
+
+    if (newPassword1 && toggleNewPassword1Icon) {
+        toggleNewPassword1Icon.addEventListener('click', function() {
+            togglePassword(newPassword1, toggleNewPassword1Icon);
+        });
+    }
+
+    if (newPassword2 && toggleNewPassword2Icon) {
+        toggleNewPassword2Icon.addEventListener('click', function() {
+            togglePassword(newPassword2, toggleNewPassword2Icon);
+        });
+    }
+</script>
 
 
 
