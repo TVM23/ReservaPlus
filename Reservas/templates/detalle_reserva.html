@@ -1,0 +1,66 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Lista de reservas - ReservaPlus{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Detalle de la Reserva</h2>
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <p><strong>Usuario:</strong> {{ reserva.usuario.username }}</p>
+    </div>
+
+    <div class="mb-3">
+        <p><strong>Fecha de inicio:</strong> {{ reserva.fecha_inicio_reserva }}</p>
+    </div>
+
+    <div class="mb-3">
+        <p><strong>Fecha final:</strong> {{ reserva.fecha_final_reserva }}</p>
+    </div>
+
+    <div class="mb-3">
+        <p><strong>Número de habitación:</strong> {{ reserva.Numero_de_habitacion }}</p>
+    </div>
+
+    <div class="mb-3">
+        <p><strong>Costo:</strong> {{ reserva.costo }}</p>
+    </div>
+
+    <div class="mb-3">
+        <label for="estado" class="form-label"><strong>Estado:</strong></label>
+        <select name="estado" id="estado" class="form-select">
+            <option value="pendiente" {% if reserva.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="en curso" {% if reserva.estado == 'en curso' %}selected{% endif %}>En curso</option>
+            <option value="cancelada" {% if reserva.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+            <option value="completada" {% if reserva.estado == 'completada' %}selected{% endif %}>Completada</option>
+        </select>
+    </div>
+
+    <h3 class="mb-3">Detalles de la habitación</h3>
+    <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>Nombre:</strong> {{ detalle_habitacion.habitacion.nombre }}</li>
+        <li class="list-group-item"><strong>Ubicación:</strong> {{ detalle_habitacion.ubicacion }}</li>
+        <li class="list-group-item"><strong>Número de camas:</strong> {{ detalle_habitacion.numero_de_camas }}</li>
+        <li class="list-group-item"><strong>Ventanas:</strong> {{ detalle_habitacion.ventanas }}</li>
+        <li class="list-group-item"><strong>Aire acondicionado:</strong> {{ detalle_habitacion.aire_acondicionado|yesno:"Sí,No" }}</li>
+        <li class="list-group-item"><strong>Jacuzzi:</strong> {{ detalle_habitacion.jacuzzi|yesno:"Sí,No" }}</li>
+        <li class="list-group-item"><strong>Disponibilidad:</strong> {{ detalle_habitacion.disponibilidad }}</li>
+    </ul>
+
+    <h3 class="mb-3">Servicios reservados:</h3>
+    <ul class="list-group mb-3">
+        {% for servicio_reserva in servicios_reservados %}
+            <li class="list-group-item">{{ servicio_reserva.servicio.nombre }}</li>
+        {% empty %}
+            <li class="list-group-item">No hay servicios reservados.</li>
+        {% endfor %}
+    </ul>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+</form>
+
+
+
+
+{% endblock %}

@@ -604,3 +604,8 @@ p a:hover {
         }
 
         /* FIN DEL CSS PARA EL PASSWORD OJO*/
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+}

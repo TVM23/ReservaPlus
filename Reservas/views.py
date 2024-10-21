@@ -1,15 +1,31 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from HotelApp.models import *
 from django.utils import timezone
 from .models import Reserva,HabitacionesReservas,ServiciosReservas
 from django.contrib.auth.decorators import login_required
+from django.views.generic import DetailView
+
 from datetime import datetime
 
 # Create your views here.
+
+
+
+def verificar_disponibilidad(habitacion, fecha_inicio, fecha_final):
+    # Buscar todas las reservas para la habitación en el rango de fechas
+    reservas = Reserva.objects.filter(
+        habitacionesreservas__habitacion=habitacion,
+        fecha_final_reserva__gte=fecha_inicio,  # Fecha de finalización después o igual a la fecha de inicio solicitada
+        fecha_inicio_reserva__lte=fecha_final   # Fecha de inicio antes o igual a la fecha de finalización solicitada
+    )
+    return not reservas.exists()  # Si no hay reservas en ese rango, la habitación está disponible
+
+
 @login_required
 def formulario_reserva(request, habitacion_id, numero_de_habitacion):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
-    servicios = Servicios.objects.filter(disponibilidad=True)  # Obtener solo los servicios disponibles
+    servicios = Servicios.objects.filter(disponibilidad=True)
 
     if request.method == 'POST':
         fecha_inicio_str = request.POST['fecha_inicio']
@@ -55,13 +71,58 @@ def formulario_reserva(request, habitacion_id, numero_de_habitacion):
         'servicios': servicios  # Pasar los servicios al template
     })
 
-
 def calcular_costo(precio_por_noche, fecha_inicio, fecha_final):
-    # Calcular la diferencia en días entre las fechas
     dias_estancia = (fecha_final - fecha_inicio).days
-    # Asegúrate de que no haya una estancia negativa
     if dias_estancia < 0:
         raise ValueError("La fecha de inicio debe ser anterior a la fecha final.")
-    # Calcular el costo total
     costo_total = precio_por_noche * dias_estancia
     return costo_total
+
+@login_required
+def lista_reservas(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+    reservas = Reserva.objects.all()
+    return render(request, 'lista_reservas.html', {'reservas': reservas})
+
+
+@login_required
+def detalle_reserva(request, reserva_id):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+    # Obtener la reserva específica
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+
+    # Obtener las habitaciones y servicios relacionados a la reserva
+    habitaciones_reservadas = HabitacionesReservas.objects.filter(reserva=reserva)
+    servicios_reservados = ServiciosReservas.objects.filter(reserva=reserva)
+    detalle_habitacion = get_object_or_404(DetalleHabitacion, Numero_de_habitacion=reserva.Numero_de_habitacion)
+
+    if request.method == 'POST':
+        # Obtener el nuevo estado de la reserva desde el formulario
+        nuevo_estado = request.POST.get('estado')
+
+        # Actualizar el estado de la reserva
+        reserva.estado = nuevo_estado
+        reserva.save()
+
+        # Cambiar la disponibilidad de la habitación basada en el estado de la reserva
+        if nuevo_estado == 'en curso':
+            detalle_habitacion.disponibilidad = 'ocupada'
+        else:
+            detalle_habitacion.disponibilidad = 'disponible'
+
+        detalle_habitacion.save()
+
+        # Redirigir de nuevo a la misma página para reflejar los cambios
+        return redirect('lista_reservas')
+
+    # Pasar los datos al contexto para la plantilla
+    context = {
+        'reserva': reserva,
+        'habitaciones_reservadas': habitaciones_reservadas,
+        'servicios_reservados': servicios_reservados,
+        'detalle_habitacion': detalle_habitacion,
+    }
+
+    return render(request, 'detalle_reserva.html', context)

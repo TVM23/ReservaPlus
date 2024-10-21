@@ -1,5 +1,6 @@
 # Create your views here.
 # Users/views.py
+from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -17,6 +18,8 @@ from .forms import CustomUserCreationForm
 
 class RegistroView(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
         form = CustomUserCreationFormRegister()
         return render(request, 'registro.html', {'form': form})
 
@@ -44,6 +47,8 @@ class RegistroView(View):
 
 class LoginView(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
         return render(request, 'login.html')
 
     def post(self, request):
@@ -79,14 +84,18 @@ def user_profile(request):
 
 @login_required
 def usuario_list(request):
+    if not request.user.is_superuser:
+        return redirect('acceso_denegado')
     usuarios = User.objects.all()  # Obtener todos los usuarios
     return render(request, 'usuarios_list.html', {'usuarios': usuarios})
 
 
 @login_required
 def toggle_usuario_status(request, user_id):
-    usuario = get_object_or_404(User, id=user_id)
+    if not request.user.is_superuser:
+        return redirect('acceso_denegado')
 
+    usuario = get_object_or_404(User, id=user_id)
     usuario.is_active = not usuario.is_active
     usuario.save()
 
@@ -128,7 +137,10 @@ def Registro(request):
 
 """
 
+@login_required
 def Registro(request):
+    if not request.user.is_superuser:
+        return redirect('acceso_denegado')
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -149,7 +161,7 @@ def Registro(request):
 
             user.save()
 
-            messages.success(request, 'Registro exitoso. Puedes iniciar sesión ahora.')
+            messages.success(request, 'Registro exitoso.')
             return redirect('usuario_list')
         else:
             for field, errors in form.errors.items():
@@ -182,3 +194,7 @@ class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         update_session_auth_hash(self.request, form.user)
         messages.success(self.request, 'Tu contraseña ha sido actualizada exitosamente.')
         return response
+
+
+def access_denied(request):
+    return render(request, 'acceso_denegado.html')

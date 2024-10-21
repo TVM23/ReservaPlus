@@ -6,6 +6,7 @@ class Habitacion(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)  # Campo decimal para el precio
     cupo = models.IntegerField()  # Entero para el cupo de personas
     imagen = models.ImageField(upload_to='habitaciones/', null=True, blank=True)
+    # imagen = models.ImageField(upload_to='habitaciones/')
 
     def __str__(self):
         return self.nombre

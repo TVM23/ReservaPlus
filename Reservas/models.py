@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
 
-
 # Create your models here.
 
 class Reserva(models.Model):
@@ -15,7 +14,6 @@ class Reserva(models.Model):
 
     def __str__(self):
         return f"Reserva {self.id} - {self.usuario.username} ({self.fecha_inicio_reserva} a {self.fecha_final_reserva})"
-
 
 
 class HabitacionesReservas(models.Model):

@@ -1,9 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+
+from .forms import HabitacionForm
 from .models import Habitacion,DetalleHabitacion,Servicios
 
-
+@login_required
 def agregar_habitacion(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         precio = request.POST.get('precio')
@@ -19,15 +24,37 @@ def agregar_habitacion(request):
 
     return render(request, 'agregar_habitacion.html')
 
+"""
 
+@login_required
+def agregar_habitacion(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+    if request.method == 'POST':
+        form = HabitacionForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_habitaciones')  # Redirige a una lista o página de éxito
+    else:
+        form = HabitacionForm()
+
+    return render(request, 'agregar_habitacion.html', {'form': form})
+
+"""
+
+@login_required
 def lista_habitaciones(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
     habitaciones = Habitacion.objects.all()
     return render(request, 'lista_habitaciones.html', {'habitaciones': habitaciones})
 
-
+@login_required()
 def editar_habitacion(request, id):
-    habitacion = Habitacion.objects.get(id=id)
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
 
+    habitacion = Habitacion.objects.get(id=id)
     if request.method == 'POST':
         habitacion.nombre = request.POST.get('nombre')
         habitacion.precio = request.POST.get('precio')
@@ -39,9 +66,12 @@ def editar_habitacion(request, id):
 
     return render(request, 'editar_habitacion.html', {'habitacion': habitacion})
 
+@login_required()
 def eliminar_habitacion(request, id):
-    habitacion = Habitacion.objects.get(id=id)
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
 
+    habitacion = Habitacion.objects.get(id=id)
     if request.method == 'POST':
         habitacion.delete()
         return redirect('lista_habitaciones')
@@ -59,7 +89,11 @@ def home(request):
 
 """"""
 
+@login_required
 def agregar_detalle_habitacion(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+
     if request.method == 'POST':
         habitacion_id = request.POST['habitacion']
         ubicacion = request.POST['ubicacion']
@@ -90,15 +124,20 @@ def agregar_detalle_habitacion(request):
     habitaciones = Habitacion.objects.all()
     return render(request, 'agregar_detalle_habitacion.html', {'habitaciones': habitaciones})
 
-
+@login_required
 def lista_detalles_habitacion(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
     detalles = DetalleHabitacion.objects.all()
     return render(request, 'lista_detalles_habitacion.html', {'detalles': detalles})
 
 
+@login_required
 def editar_detalle_habitacion(request, id):
-    detalle = get_object_or_404(DetalleHabitacion, id=id)
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
 
+    detalle = get_object_or_404(DetalleHabitacion, id=id)
     if request.method == "POST":
         habitacion_id = request.POST.get('habitacion')
         detalle.habitacion = Habitacion.objects.get(id=habitacion_id)
@@ -119,14 +158,21 @@ def editar_detalle_habitacion(request, id):
         'habitaciones': habitaciones
     })
 
+@login_required()
 def eliminar_detalle_habitacion(request, id):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+
     detalle = get_object_or_404(DetalleHabitacion, id=id)
     detalle.delete()
     return redirect('lista_detalles_habitacion')
 
 """"""
 
+@login_required()
 def crear_servicio_view(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
     if request.method == 'POST':
         nombre = request.POST['nombre']
         descripcion = request.POST['descripcion']
@@ -143,15 +189,21 @@ def crear_servicio_view(request):
 
 
 # Listar servicios
+@login_required
 def listar_servicios_view(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
     servicios = Servicios.objects.all()
     return render(request, 'listar_servicios.html', {'servicios': servicios})
 
 
 # Actualizar servicio
+@login_required
 def actualizar_servicio_view(request, pk):
-    servicio = get_object_or_404(Servicios, pk=pk)
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
 
+    servicio = get_object_or_404(Servicios, pk=pk)
     if request.method == 'POST':
         servicio.nombre = request.POST['nombre']
         servicio.descripcion = request.POST['descripcion']
@@ -167,7 +219,11 @@ def actualizar_servicio_view(request, pk):
 
 
 # Eliminar servicio
+@login_required
 def eliminar_servicio_view(request, pk):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+
     servicio = get_object_or_404(Servicios, pk=pk)
     if request.method == 'POST':
         servicio.delete()
@@ -181,7 +237,7 @@ def servicios_cartas(request):
     return render(request, 'servicios_cartas.html', {'servicios': servicios})
 
 
-##
+"""
 def lista_habitaciones2(request):
     # Obtener todas las habitaciones con su primer detalle
     habitaciones = Habitacion.objects.prefetch_related('detallehabitacion_set')
@@ -193,6 +249,20 @@ def lista_habitaciones2(request):
         habitaciones_con_detalle.append((habitacion, primer_detalle))
 
     return render(request, 'lista_habitaciones2.html', {'habitaciones_con_detalle': habitaciones_con_detalle})
+    
+"""
+
+def lista_habitaciones2(request):
+    habitaciones = Habitacion.objects.all()
+
+    habitaciones_con_detalle = []
+    for habitacion in habitaciones:
+        primer_detalle = habitacion.detallehabitacion_set.filter(disponibilidad='disponible').first()
+        if primer_detalle:
+            habitaciones_con_detalle.append((habitacion, primer_detalle))
+
+    return render(request, 'lista_habitaciones2.html', {'habitaciones_con_detalle': habitaciones_con_detalle})
+
 
 
 def detalle_habitacion(request, habitacion_id):
