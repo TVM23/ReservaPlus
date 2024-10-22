@@ -9,11 +9,11 @@
         {% csrf_token %}
         <div class="mb-3">
             <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
-            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio }}" readonly required>
         </div>
         <div class="mb-3">
             <label for="fecha_final" class="form-label">Fecha Final</label>
-            <input type="date" class="form-control" id="fecha_final" name="fecha_final" required>
+            <input type="date" class="form-control" id="fecha_final" name="fecha_final" value="{{ fecha_final }}" readonly required>
         </div>
         <div class="mb-3">
             <label for="numero_personas" class="form-label">Número de Personas</label>
@@ -34,6 +34,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Reservar</button>
     </form>
-    <a href="{% url 'lista_habitaciones2' %}" class="btn btn-secondary">Volver a Habitaciones</a>
+    <a href="{% url 'lista_habitaciones2' fecha_inicio=fecha_inicio fecha_final=fecha_final %}"
+           class="btn btn-secondary">Volver a Habitaciones</a>
 </div>
 {% endblock %}

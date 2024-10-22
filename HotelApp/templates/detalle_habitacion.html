@@ -24,8 +24,13 @@
             <p>No hay detalles disponibles para esta habitación.</p>
         {% endif %}
 
-        <a href="{% url 'lista_habitaciones2' %}" class="btn btn-secondary">Volver a Habitaciones</a>
-        <a href="{% url 'formulario_reserva' habitacion.id detalle.Numero_de_habitacion %}" class="btn btn-success">Reservar</a>
+        <a href="{% url 'formulario_reserva' habitacion.id numero_de_habitacion %}?fecha_inicio={{ fecha_inicio }}&fecha_final={{ fecha_final }}"
+           class="btn btn-primary">Reservar</a>
+
+
+        <a href="{% url 'lista_habitaciones2' fecha_inicio=fecha_inicio fecha_final=fecha_final %}"
+           class="btn btn-secondary">Volver a Habitaciones</a>
+
 
     </div>
 

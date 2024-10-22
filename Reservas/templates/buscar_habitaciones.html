@@ -1,0 +1,18 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Fechas de tu Reserva{% endblock %}
+
+{% block content %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="fecha_inicio">Fecha de Inicio:</label>
+        <input type="date" name="fecha_inicio" required>
+        <br>
+        <label for="fecha_final">Fecha Final:</label>
+        <input type="date" name="fecha_final" required>
+        <br>
+        <button type="submit">Buscar</button>
+    </form>
+
+{% endblock %}

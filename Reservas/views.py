@@ -2,14 +2,35 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from HotelApp.models import *
 from django.utils import timezone
-from .models import Reserva,HabitacionesReservas,ServiciosReservas
+from .models import Reserva, HabitacionesReservas, ServiciosReservas
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.views.generic import DetailView
 
-from datetime import datetime
 
 # Create your views here.
+def buscar_habitaciones(request):
+    if request.method == 'POST':
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_final = request.POST.get('fecha_final')
 
+        # Busca las reservas que caen dentro del rango de fechas
+        reservas = Reserva.objects.filter(
+            (models.Q(fecha_inicio_reserva__lt=fecha_final) & models.Q(fecha_final_reserva__gt=fecha_inicio))
+        )
+
+        # Obtiene los números de habitación ocupados
+        numeros_ocupados = reservas.values_list('Numero_de_habitacion', flat=True)
+
+        # Filtra las habitaciones que no están ocupadas
+        habitaciones_disponibles = Habitacion.objects.exclude(id__in=numeros_ocupados)
+
+        # Redirigir a la vista lista_habitaciones2 pasando las fechas
+        return redirect('lista_habitaciones2',
+                        fecha_inicio=fecha_inicio,
+                        fecha_final=fecha_final)
+
+    return render(request, 'buscar_habitaciones.html')
 
 
 def verificar_disponibilidad(habitacion, fecha_inicio, fecha_final):
@@ -17,7 +38,7 @@ def verificar_disponibilidad(habitacion, fecha_inicio, fecha_final):
     reservas = Reserva.objects.filter(
         habitacionesreservas__habitacion=habitacion,
         fecha_final_reserva__gte=fecha_inicio,  # Fecha de finalización después o igual a la fecha de inicio solicitada
-        fecha_inicio_reserva__lte=fecha_final   # Fecha de inicio antes o igual a la fecha de finalización solicitada
+        fecha_inicio_reserva__lte=fecha_final  # Fecha de inicio antes o igual a la fecha de finalización solicitada
     )
     return not reservas.exists()  # Si no hay reservas en ese rango, la habitación está disponible
 
@@ -26,6 +47,10 @@ def verificar_disponibilidad(habitacion, fecha_inicio, fecha_final):
 def formulario_reserva(request, habitacion_id, numero_de_habitacion):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
     servicios = Servicios.objects.filter(disponibilidad=True)
+
+    # Obtener fechas de la solicitud GET
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_final = request.GET.get('fecha_final')
 
     if request.method == 'POST':
         fecha_inicio_str = request.POST['fecha_inicio']
@@ -38,7 +63,7 @@ def formulario_reserva(request, habitacion_id, numero_de_habitacion):
 
         # Cálculo del costo total
         costo_servicios = sum(Servicios.objects.get(id=servicio_id).precio for servicio_id in servicios_seleccionados)
-        costo_total = calcular_costo(habitacion.precio, fecha_inicio, fecha_final) + costo_servicios  # Asume que ya tienes esta función definida
+        costo_total = calcular_costo(habitacion.precio, fecha_inicio, fecha_final) + costo_servicios
 
         # Crear la reserva
         reserva = Reserva.objects.create(
@@ -63,13 +88,16 @@ def formulario_reserva(request, habitacion_id, numero_de_habitacion):
                 servicio_id=servicio_id
             )
 
-        return redirect('lista_habitaciones2')  # Redirige a donde necesites
+        return redirect('lista_habitaciones2', fecha_inicio=fecha_inicio_str, fecha_final=fecha_final_str)
 
     return render(request, 'formulario_reserva.html', {
         'habitacion': habitacion,
         'numero_de_habitacion': numero_de_habitacion,  # Pasar el número de habitación
-        'servicios': servicios  # Pasar los servicios al template
+        'servicios': servicios,  # Pasar los servicios al template
+        'fecha_inicio': fecha_inicio,  # Pasar la fecha de inicio
+        'fecha_final': fecha_final,      # Pasar la fecha final
     })
+
 
 def calcular_costo(precio_por_noche, fecha_inicio, fecha_final):
     dias_estancia = (fecha_final - fecha_inicio).days
@@ -77,6 +105,7 @@ def calcular_costo(precio_por_noche, fecha_inicio, fecha_final):
         raise ValueError("La fecha de inicio debe ser anterior a la fecha final.")
     costo_total = precio_por_noche * dias_estancia
     return costo_total
+
 
 @login_required
 def lista_reservas(request):

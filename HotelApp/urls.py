@@ -17,8 +17,8 @@ urlpatterns = [
     path('servicios/actualizar/<int:pk>/', actualizar_servicio_view, name='actualizar_servicio'),
     path('servicios/eliminar/<int:pk>/', eliminar_servicio_view, name='eliminar_servicio'),
     path('servicios-cartas/', views.servicios_cartas, name='servicios_cartas'),
-    path('lista_habitaciones/', lista_habitaciones2, name='lista_habitaciones2'),
-    path('habitaciones/<int:habitacion_id>/', detalle_habitacion, name='detalle_habitacion'),
+    path('lista_habitaciones/<str:fecha_inicio>/<str:fecha_final>/', lista_habitaciones2, name='lista_habitaciones2'),
+    path('detalle_habitacion/<int:habitacion_id>/', detalle_habitacion, name='detalle_habitacion'),
     # Asegúrate de agregar otras rutas, como la de la lista de habitaciones
 
     path('', redirect_to_home, name='redirect_to_home'),  # Redirigir desde la raíz
