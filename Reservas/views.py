@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.functional import empty
+
 from HotelApp.models import *
 from django.utils import timezone
 from .models import Reserva, HabitacionesReservas, ServiciosReservas
@@ -8,7 +10,8 @@ from django.db.models import Q
 from django.views.generic import DetailView
 
 
-# Create your views here.
+# Create your views here
+@login_required
 def buscar_habitaciones(request):
     if request.method == 'POST':
         fecha_inicio = request.POST.get('fecha_inicio')
@@ -155,3 +158,29 @@ def detalle_reserva(request, reserva_id):
     }
 
     return render(request, 'detalle_reserva.html', context)
+
+
+@login_required
+def reservas_usuario(request):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
+    else:
+        usuario = request.user
+        # Filtrar reservas del usuario que estén en estado "pendiente" o "en curso"
+        reservas = Reserva.objects.filter(usuario=usuario, estado__in=['pendiente', 'en curso'])
+
+        # Agregar información de las habitaciones y servicios de cada reserva
+        reservas_info = []
+        for reserva in reservas:
+            habitaciones_reserva = HabitacionesReservas.objects.filter(reserva=reserva)
+            servicios_reserva = ServiciosReservas.objects.filter(reserva=reserva)
+            reservas_info.append({
+                'reserva': reserva,
+                'habitaciones': habitaciones_reserva,
+                'servicios': servicios_reserva,
+            })
+
+        context = {
+            'reservas_info': reservas_info
+        }
+        return render(request, 'reservas_usuario.html', context)

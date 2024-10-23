@@ -66,6 +66,11 @@
                 <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
 
                 {% if request.user.is_authenticated %}
+                    {% if not request.user.is_superuser and not request.user.is_staff %}
+                        <li class="navbar-item">
+                            <a href="{% url 'reservas_usuario' %}">Mis reservas</a>
+                        </li>
+                    {% endif %}
                     <li class="navbar-item dropdown">
                         <a class="dropdown-toggle" data-bs-toggle="dropdown"
                            aria-expanded="false" style="color: #333333">

@@ -609,3 +609,34 @@ p a:hover {
     color: red;
     font-size: 0.875rem;
 }
+
+
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.habitacion-imagen {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.service-box {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.service-box:hover {
+    background-color: #e9ecef;
+}
