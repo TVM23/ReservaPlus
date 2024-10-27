@@ -4,10 +4,11 @@ from django.utils.functional import empty
 
 from HotelApp.models import *
 from django.utils import timezone
-from .models import Reserva, HabitacionesReservas, ServiciosReservas
+from .models import Reserva, HabitacionesReservas, ServiciosReservas, Reseña
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.generic import DetailView
+from django.contrib.auth.models import User
 
 
 # Create your views here
@@ -178,9 +179,37 @@ def reservas_usuario(request):
                 'reserva': reserva,
                 'habitaciones': habitaciones_reserva,
                 'servicios': servicios_reserva,
+                'usuario_id': usuario.id,
             })
 
         context = {
             'reservas_info': reservas_info
         }
         return render(request, 'reservas_usuario.html', context)
+
+
+def crear_resena(request, usuario_id, reserva_id, habitacion_id):
+    usuario = get_object_or_404(User, id=usuario_id)
+    reserva = get_object_or_404(Reserva, id=reserva_id, usuario=usuario)
+    habitacion_reservada = get_object_or_404(HabitacionesReservas, reserva=reserva, habitacion__id=habitacion_id)
+
+    if request.method == "POST":
+        comentarios = request.POST.get('comentarios')
+        reseña = request.POST.get('reseña')
+
+        nueva_resena = Reseña(
+            usuario=usuario,
+            reserva=reserva,
+            habitacion_reservada=habitacion_reservada,
+            comentarios=comentarios,
+            reseña=reseña,
+        )
+        nueva_resena.save()
+
+        return redirect('reservas_usuario')  # Redirige a la lista de reservas
+
+    return render(request, 'crear_resena.html', {
+        'usuario': usuario,
+        'reserva': reserva,
+        'habitacion_reservada': habitacion_reservada,
+    })

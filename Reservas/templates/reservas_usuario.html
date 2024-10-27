@@ -4,65 +4,77 @@
 
 {% block content %}
 
-<h1>Mis Reservas</h1>
-<div class="container mt-4">
-    {% if reservas_info %}
-        <div class="row">
-            {% for info in reservas_info %}
-                <div class="col-md-12 mb-4">
-                    <div class="card shadow-lg">
-                        <div class="card-header text-white d-flex justify-content-between align-items-center" style="background: #57bdd3">
-                            <div>
-                                <!-- <h5 class="card-title">Reserva ID: {{ info.reserva.id }}</h5> -->
-                                <p class="card-text"><strong>Estado:</strong> {{ info.reserva.estado }}</p>
+    <h1>Mis Reservas</h1>
+    <div class="container mt-4">
+        {% if reservas_info %}
+            <div class="row">
+                {% for info in reservas_info %}
+                    <div class="col-md-12 mb-4">
+                        <div class="card shadow-lg">
+                            <div class="card-header text-white d-flex justify-content-between align-items-center"
+                                 style="background: #57bdd3">
+                                <div>
+                                    <!-- <h5 class="card-title">Reserva ID: {{ info.reserva.id }}</h5> -->
+                                    <p class="card-text"><strong>Estado:</strong> {{ info.reserva.estado }}</p>
+                                </div>
+                                <div>
+                                    <p class="card-text"><strong>Costo Total:</strong> ${{ info.reserva.costo }}</p>
+                                    <p class="card-text"><strong>Número de
+                                        habitación:</strong> {{ info.reserva.Numero_de_habitacion }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="card-text"><strong>Costo Total:</strong> ${{ info.reserva.costo }}</p>
-                                <p class="card-text"><strong>Número de habitación:</strong> {{ info.reserva.Numero_de_habitacion }}</p>
-                            </div>
-                        </div>
-                        <div class="card-body row">
-                            <div class="col-md-4">
-                                {% for habitacion_reserva in info.habitaciones %}
-                                    <h5>Habitación: {{ habitacion_reserva.habitacion.nombre }}</h5>
-                                    <img src="{{ habitacion_reserva.habitacion.imagen.url }}" alt="Imagen de la Habitación" class="img-fluid mb-2">
-                                    <p><strong>Precio:</strong> ${{ habitacion_reserva.habitacion.precio }}</p>
-                                    <p><strong>Cupo:</strong> {{ habitacion_reserva.habitacion.cupo }} personas</p>
-                                {% endfor %}
-                            </div>
-                            <div class="col-md-8">
-                                <p><strong>Fecha de inicio:</strong> {{ info.reserva.fecha_inicio_reserva }}</p>
-                                <p><strong>Fecha de finalización:</strong> {{ info.reserva.fecha_final_reserva }}</p>
+                            <div class="card-body row">
+                                <div class="col-md-4">
+                                    {% for habitacion_reserva in info.habitaciones %}
+                                        <h5>Habitación: {{ habitacion_reserva.habitacion.nombre }}</h5>
+                                        <img src="{{ habitacion_reserva.habitacion.imagen.url }}"
+                                             alt="Imagen de la Habitación" class="img-fluid mb-2">
+                                        <p><strong>Precio:</strong> ${{ habitacion_reserva.habitacion.precio }}</p>
+                                        <p><strong>Cupo:</strong> {{ habitacion_reserva.habitacion.cupo }} personas</p>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-8">
+                                    <p><strong>Fecha de inicio:</strong> {{ info.reserva.fecha_inicio_reserva }}</p>
+                                    <p><strong>Fecha de finalización:</strong> {{ info.reserva.fecha_final_reserva }}
+                                    </p>
 
-                                {% if info.servicios %}
-                                    <h6>Servicios Incluidos:</h6>
-                                    <div class="row">
-                                        {% for servicio_reserva in info.servicios %}
-                                            <div class="col-md-6 mb-2">
-                                                <div class="service-box p-2 border rounded">
-                                                    <p class="mb-1"><strong>{{ servicio_reserva.servicio.nombre }}</strong></p>
-                                                    <p>${{ servicio_reserva.servicio.precio }}</p>
+                                    {% if info.servicios %}
+                                        <h6>Servicios Incluidos:</h6>
+                                        <div class="row">
+                                            {% for servicio_reserva in info.servicios %}
+                                                <div class="col-md-6 mb-2">
+                                                    <div class="service-box p-2 border rounded">
+                                                        <p class="mb-1">
+                                                            <strong>{{ servicio_reserva.servicio.nombre }}</strong></p>
+                                                        <p>${{ servicio_reserva.servicio.precio }}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <p>No hay servicios adicionales.</p>
-                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p>No hay servicios adicionales.</p>
+                                    {% endif %}
+                                </div>
                             </div>
+                            {% if info.reserva.estado == "en curso" %}
+                                <div class="card-footer d-flex justify-content-end">
+                                    {% for habitacion_reserva in info.habitaciones %}
+                                        {% if habitacion_reserva.habitacion.id %}
+                                            <a href="{% url 'crear_resena' info.usuario_id info.reserva.id habitacion_reserva.habitacion.id %}"
+                                               class="btn btn-outline-success">
+                                                Reseñar
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
-                        {% if info.reserva.estado == "en curso" %}
-                            <div class="card-footer d-flex justify-content-end">
-                                <button class="btn btn-outline-success">Reseñar</button>
-                            </div>
-                        {% endif %}
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>No tienes reservas pendientes o en curso.</p>
-    {% endif %}
-</div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No tienes reservas pendientes o en curso.</p>
+        {% endif %}
+    </div>
 
 {% endblock %}

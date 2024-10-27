@@ -32,3 +32,15 @@ class ServiciosReservas(models.Model):
 
     def __str__(self):
         return f'Servicio {self.servicio.nombre} en Reserva {self.reserva.id}'
+
+
+class Reseña(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)  # ForeignKey a la tabla de usuarios de Django
+    habitacion_reservada = models.ForeignKey('HabitacionesReservas', on_delete=models.CASCADE)  # ForeignKey a HabitacionesReservas
+    reserva = models.ForeignKey('Reserva', on_delete=models.CASCADE)  # ForeignKey a la tabla Reserva
+    comentarios = models.CharField(max_length=255)  # Campo para comentarios de tipo varchar
+    reseña = models.IntegerField()  # Campo para la calificación (reseña)
+
+    def __str__(self):
+        return f"Reseña de {self.usuario.username} para la Reserva {self.reserva.id}"
+

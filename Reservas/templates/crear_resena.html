@@ -1,0 +1,21 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Reseña - ReservaPlus{% endblock %}
+
+{% block content %}
+<h1>Dejar una Reseña</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="comentarios" class="form-label">Comentarios:</label>
+        <textarea name="comentarios" id="comentarios" class="form-control" rows="4"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="reseña" class="form-label">Reseña (1 a 5):</label>
+        <input type="number" name="reseña" id="reseña" min="1" max="5" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Reseña</button>
+</form>
+
+{% endblock %}
