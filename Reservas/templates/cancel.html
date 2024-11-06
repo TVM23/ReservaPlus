@@ -1,0 +1,14 @@
+{% extends '_Layaout.html' %}
+
+{% block title %}Cancel page{% endblock %}
+
+{% block content %}
+
+    <div class="success-container">
+        <i class="fas fa-exclamation-triangle warning-icon"></i>
+        <div class="success-text">Cancelación de pago</div>
+        <p>Has decidido cancelar el proceso de pago.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary">Volver a inicio</a>
+    </div>
+
+{% endblock %}

@@ -56,6 +56,13 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            {% if info.reserva.estado == "pendiente" %}
+                                <div class="card-footer d-flex justify-content-end">
+                                    <a href="{% url 'cancelar_reserva' info.reserva.id %}" class="btn btn-outline-danger">
+                                        Cancelar Reserva
+                                    </a>
+                                </div>
+                            {% endif %}
                             {% if info.reserva.estado == "en curso" %}
                                 <div class="card-footer d-flex justify-content-end">
                                     {% for habitacion_reserva in info.habitaciones %}

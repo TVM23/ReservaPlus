@@ -1,6 +1,6 @@
 from HotelApp.urls import path
 from .views import formulario_reserva, lista_reservas, detalle_reserva, buscar_habitaciones, \
-    reservas_usuario,crear_resena
+    reservas_usuario, crear_resena, cancelar_reserva, checkout_session, success, cancel, stripe_webhook
 
 urlpatterns = [
     path('formulario_reserva/<int:habitacion_id>/<int:numero_de_habitacion>/', formulario_reserva,
@@ -11,4 +11,11 @@ urlpatterns = [
     path('mis-reservas/', reservas_usuario, name='reservas_usuario'),
     path('crear_resena/<int:usuario_id>/<int:reserva_id>/<int:habitacion_id>/', crear_resena,
          name='crear_resena'),
+    path('reservas/cancelar/<int:reserva_id>/', cancelar_reserva, name='cancelar_reserva'),
+
+    path('checkout_session/', checkout_session, name='checkout_session'),
+    path('success/', success, name='success'),
+    path('cancel/', cancel, name='cancel'),
+    path('webhook/', stripe_webhook, name='stripe_webhook'),
+
 ]

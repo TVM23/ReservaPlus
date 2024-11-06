@@ -2,18 +2,25 @@
 
 {% block title %}Formulario de Reserva{% endblock %}
 
+<script src="https://js.stripe.com/v3/"></script>
+
 {% block content %}
+
+
 <div class="container mt-4">
     <h1 class="text-center">Reservar {{ habitacion.nombre }}</h1>
-    <form method="POST">
+    <!-- <form method="POST">  -->
+    <form action="{% url 'checkout_session' %}" method="POST">
         {% csrf_token %}
+        <input type="hidden" name="habitacion_id" value="{{ habitacion.id }}">
+        <input type="hidden" name="numero_de_habitacion" value="{{ numero_de_habitacion }}">
         <div class="mb-3">
             <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
-            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio }}" readonly required>
+            <input type="hidden" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio }}" readonly required>
         </div>
         <div class="mb-3">
             <label for="fecha_final" class="form-label">Fecha Final</label>
-            <input type="date" class="form-control" id="fecha_final" name="fecha_final" value="{{ fecha_final }}" readonly required>
+            <input type="hidden" class="form-control" id="fecha_final" name="fecha_final" value="{{ fecha_final }}" readonly required>
         </div>
         <div class="mb-3">
             <label for="numero_personas" class="form-label">Número de Personas</label>
@@ -32,7 +39,8 @@
                 {% endfor %}
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Reservar</button>
+        <!-- <button type="submit" class="btn btn-primary">Reservar</button> -->
+        <button type="submit" class="btn btn-primary" id="checkout-button">Pagar con Stripe</button>
     </form>
     <a href="{% url 'lista_habitaciones2' fecha_inicio=fecha_inicio fecha_final=fecha_final %}"
            class="btn btn-secondary">Volver a Habitaciones</a>

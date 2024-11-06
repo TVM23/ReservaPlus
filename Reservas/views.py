@@ -1,14 +1,22 @@
+import json
+import stripe
+from django.conf import settings
 from django.contrib import messages
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils.functional import empty
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from HotelApp.models import *
 from django.utils import timezone
-from .models import Reserva, HabitacionesReservas, ServiciosReservas, Reseña
+from .models import Reserva, HabitacionesReservas, ServiciosReservas, Reseña, Pago
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.views.generic import DetailView
 from django.contrib.auth.models import User
+from datetime import datetime
+
+DOMAIN = settings.DOMAIN
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 # Create your views here
@@ -46,7 +54,6 @@ def verificar_disponibilidad(habitacion, fecha_inicio, fecha_final):
     )
     return not reservas.exists()  # Si no hay reservas en ese rango, la habitación está disponible
 
-
 @login_required
 def formulario_reserva(request, habitacion_id, numero_de_habitacion):
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
@@ -60,7 +67,7 @@ def formulario_reserva(request, habitacion_id, numero_de_habitacion):
         fecha_inicio_str = request.POST['fecha_inicio']
         fecha_final_str = request.POST['fecha_final']
         numero_personas = request.POST['numero_personas']
-        servicios_seleccionados = request.POST.getlist('servicios')  # Obtener la lista de servicios seleccionados
+        servicios_seleccionados = request.POST.getlist('servicios')
 
         fecha_inicio = timezone.datetime.fromisoformat(fecha_inicio_str)
         fecha_final = timezone.datetime.fromisoformat(fecha_final_str)
@@ -187,11 +194,48 @@ def reservas_usuario(request):
         }
         return render(request, 'reservas_usuario.html', context)
 
+@login_required
+def cancelar_reserva(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id)
 
+    # Verifica que el usuario sea el dueño de la reserva
+    if request.user == reserva.usuario:
+        # Cambia el estado de la reserva
+        reserva.estado = "cancelada"
+        reserva.save()
+
+        # Obtén el pago asociado a la reserva
+        pago = reserva.pagos.filter(estado="completado").first()
+
+        # Procesa el reembolso si el pago está completado
+        if pago:
+            try:
+                reembolso = stripe.Refund.create(
+                    payment_intent=pago.transaccion_id  # Usa el ID de transacción de Stripe
+                )
+
+                # Actualiza el estado del pago a "reembolsado"
+                pago.estado = "reembolsado"
+                pago.save()
+
+                messages.success(request, "La reserva ha sido cancelada y el reembolso se ha procesado exitosamente.")
+            except stripe.error.StripeError as e:
+                messages.error(request, f"Error al procesar el reembolso: {e}")
+        else:
+            messages.info(request, "La reserva fue cancelada, pero no se encontró un pago completado para reembolsar.")
+    else:
+        messages.error(request, "No tienes permiso para cancelar esta reserva.")
+
+    return redirect('reservas_usuario')
+
+@login_required
 def crear_resena(request, usuario_id, reserva_id, habitacion_id):
     usuario = get_object_or_404(User, id=usuario_id)
     reserva = get_object_or_404(Reserva, id=reserva_id, usuario=usuario)
     habitacion_reservada = get_object_or_404(HabitacionesReservas, reserva=reserva, habitacion__id=habitacion_id)
+
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
 
     if request.method == "POST":
         comentarios = request.POST.get('comentarios')
@@ -213,3 +257,136 @@ def crear_resena(request, usuario_id, reserva_id, habitacion_id):
         'reserva': reserva,
         'habitacion_reservada': habitacion_reservada,
     })
+
+@login_required
+def checkout_session(request):
+    if request.method == 'POST':
+        try:
+            habitacion_id = request.POST.get('habitacion_id')
+            fecha_inicio_str = request.POST.get('fecha_inicio')
+            fecha_final_str = request.POST.get('fecha_final')
+            fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
+            fecha_final = datetime.fromisoformat(fecha_final_str)
+            numero_personas = request.POST.get('numero_personas')
+            servicios_seleccionados = request.POST.getlist('servicios')
+            habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+            costo_servicios = sum(Servicios.objects.get(id=servicio_id).precio for servicio_id in servicios_seleccionados)
+            costo_total = calcular_costo(habitacion.precio, fecha_inicio, fecha_final) + costo_servicios
+            user_email = request.user.email
+            numero_de_habitacion = request.POST.get('numero_de_habitacion')
+
+            # Crear sesión de checkout de Stripe
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'mxn',
+                            'unit_amount': int(costo_total * 100),
+                            'product_data': {
+                                'name': habitacion.nombre,
+                                'description': f'Numero personas: {numero_personas}',
+                                'images': [habitacion.imagen],
+                            },
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                billing_address_collection='required',
+                success_url=DOMAIN + '/Reservas' + '/success',
+                cancel_url=DOMAIN + '/Reservas' + '/cancel',
+                customer_email=user_email,
+                metadata={
+                    'habitacion_id': habitacion_id,
+                    'fecha_inicio': fecha_inicio_str,
+                    'fecha_final': fecha_final_str,
+                    'numero_personas': numero_personas,
+                    'servicios_seleccionados': ','.join(servicios_seleccionados),
+                    'user_id': request.user.id,
+                    'costo_total': costo_total,
+                    'numero_de_habitacion': numero_de_habitacion,
+                }
+            )
+            return redirect(checkout_session.url)
+        except Exception as error:
+            print(error)
+            return redirect('home')
+
+@login_required
+def success(request):
+    return render(request, 'success.html')
+@login_required
+def cancel(request):
+    return render(request, 'cancel.html')
+
+
+@csrf_exempt
+@require_POST
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    endpoint_secret = settings.STRIPE_WEBHOOK_KEY
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except (ValueError, stripe.error.SignatureVerificationError) as e:
+        # Si hay un error, responde con 400
+        return HttpResponse(status=400)
+
+    # Manejar el evento checkout.session.completed
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+
+        # Obtener datos de la sesión
+        habitacion_id = session['metadata']['habitacion_id']
+        fecha_inicio_str = session['metadata']['fecha_inicio']
+        fecha_final_str = session['metadata']['fecha_final']
+        numero_personas = int(session['metadata']['numero_personas'])
+        servicios_seleccionados = session['metadata']['servicios_seleccionados'].split(',')
+        user_id = session['metadata']['user_id']
+        costo_total = session['metadata']['costo_total']
+        numero_de_habitacion = session['metadata']['numero_de_habitacion']
+
+        # Convertir fechas
+        fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
+        fecha_final = datetime.fromisoformat(fecha_final_str)
+
+        # Obtener los modelos necesarios
+        habitacion = Habitacion.objects.get(id=habitacion_id)
+        usuario = User.objects.get(id=user_id)
+
+        # Crear la reserva
+        reserva = Reserva.objects.create(
+            fecha_inicio_reserva=fecha_inicio,
+            fecha_final_reserva=fecha_final,
+            usuario=usuario,
+            estado='pendiente',
+            Numero_de_habitacion= numero_de_habitacion,
+            costo = costo_total
+        )
+
+        # Registrar la habitación en la reserva
+        HabitacionesReservas.objects.create(
+            reserva=reserva,
+            habitacion=habitacion,
+            personas=numero_personas
+        )
+
+        # Registrar los servicios seleccionados en la reserva
+        for servicio_id in servicios_seleccionados:
+            servicio = Servicios.objects.get(id=servicio_id)
+            ServiciosReservas.objects.create(
+                reserva=reserva,
+                servicio=servicio
+            )
+
+        # Crear el pago en el sistema
+        Pago.objects.create(
+            reserva=reserva,
+            usuario=usuario,
+            monto=costo_total,  # Convertir de centavos a la moneda original
+            estado='completado',
+            transaccion_id=session['payment_intent']
+        )
+
+    return JsonResponse({'status': 'success'}, status=200)

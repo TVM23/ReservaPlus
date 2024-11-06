@@ -271,7 +271,7 @@ def lista_habitaciones2(request):
 def lista_habitaciones2(request, fecha_inicio, fecha_final):
     # Busca las reservas que caen dentro del rango de fechas
     reservas = Reserva.objects.filter(
-        Q(fecha_inicio_reserva__lt=fecha_final) & Q(fecha_final_reserva__gt=fecha_inicio)
+        Q(fecha_inicio_reserva__lt=fecha_final) & Q(fecha_final_reserva__gt=fecha_inicio) & ~Q(estado="cancelada")
     )
 
     # Obtiene los números de habitación ocupados
@@ -312,7 +312,7 @@ def detalle_habitacion(request, habitacion_id):
 
     # Filtrar reservas para las fechas proporcionadas
     reservas = Reserva.objects.filter(
-        Q(fecha_inicio_reserva__lt=fecha_final) & Q(fecha_final_reserva__gt=fecha_inicio)
+        Q(fecha_inicio_reserva__lt=fecha_final) & Q(fecha_final_reserva__gt=fecha_inicio) & ~Q(estado="cancelada")
     )
 
     # Obtener los números de habitación ocupados

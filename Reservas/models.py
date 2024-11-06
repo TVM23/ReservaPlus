@@ -44,3 +44,14 @@ class Reseña(models.Model):
     def __str__(self):
         return f"Reseña de {self.usuario.username} para la Reserva {self.reserva.id}"
 
+
+class Pago(models.Model):
+    reserva = models.ForeignKey(Reserva, on_delete=models.CASCADE, related_name="pagos")
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    estado = models.CharField(
+        max_length=20,
+        choices=[('pendiente', 'Pendiente'), ('completado', 'Completado'), ('reembolsado', 'Reembolsado')]
+    )
+    fecha_pago = models.DateTimeField(auto_now_add=True)
+    transaccion_id = models.CharField(max_length=100, unique=True)
