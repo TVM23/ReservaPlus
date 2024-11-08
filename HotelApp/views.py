@@ -6,6 +6,9 @@ from .forms import HabitacionForm
 from django.db.models import Q
 from .models import Habitacion, DetalleHabitacion, Servicios
 from django.db import models
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import ServiciosSerializer
 
 
 @login_required
@@ -339,3 +342,18 @@ def detalle_habitacion(request, habitacion_id):
         'fecha_inicio': fecha_inicio,
         'fecha_final': fecha_final,
     })
+
+
+
+
+#APIS
+
+@api_view(['GET'])
+def servicios_cartas_api(request):
+    # Obtenemos todos los servicios
+    servicios = Servicios.objects.all()
+    # Serializamos los datos
+    serializer = ServiciosSerializer(servicios, many=True)
+    # Devolvemos la respuesta JSON
+    return Response(serializer.data)
+

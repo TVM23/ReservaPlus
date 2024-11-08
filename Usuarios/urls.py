@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import RegistroView, LoginView, logout_view, user_profile, usuario_list, toggle_usuario_status, Registro, \
-    UserProfileUpdateView, UserPasswordChangeView, access_denied
+    UserProfileUpdateView, UserPasswordChangeView, access_denied, UserCreateApiView, CheckAuthenticatedView, \
+    LoginApiView, LogoutApiView, UserProfileUpdateApiView, PasswordChangeApiView
 
 urlpatterns = [
     path('registro/', RegistroView.as_view(), name='registro'),
@@ -13,4 +14,13 @@ urlpatterns = [
     path('usuarios/editar/', UserProfileUpdateView.as_view(), name='edit_profile'),
     path('ususarios/cambiar-contraseña/', UserPasswordChangeView.as_view(), name='change_password'),
     path('acceso-denegado/', access_denied, name='acceso_denegado'),
+
+    # Apis
+
+    path('api/registrar/', UserCreateApiView.as_view(), name='api_registrar_usuario'),
+    path('check-auth/', CheckAuthenticatedView.as_view(), name='check-auth'),
+    path('api/login/', LoginApiView.as_view(), name='login-api'),
+    path('api/logout/', LogoutApiView.as_view(), name='logout-api'),
+    path('api/update-profile/', UserProfileUpdateApiView.as_view(), name='update-profile-api'),
+    path('api/change-password/', PasswordChangeApiView.as_view(), name='change-password-api'),
 ]

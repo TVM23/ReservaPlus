@@ -4,9 +4,6 @@ from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.models import User
-from django.contrib import messages
 from django.contrib.auth import logout
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
@@ -15,6 +12,16 @@ from .forms import UserUpdateForm, CustomPasswordChangeForm, CustomUserCreationF
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import update_session_auth_hash
 from .forms import CustomUserCreationForm
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import UserCreateSerializer,LoginSerializer,UserProfileUpdateSerializer,PasswordChangeSerializer
+from django.contrib.auth.models import User
+
 
 class RegistroView(View):
     def get(self, request):
@@ -198,3 +205,122 @@ class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
 def access_denied(request):
     return render(request, 'acceso_denegado.html')
+
+
+
+
+
+#APIs
+class UserCreateApiView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Crear el usuario con el serializador
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # Autenticación e inicio de sesión con sesiones
+        username = request.data.get('username')
+        password = request.data.get('password1')
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)  # Inicia la sesión con el usuario autenticado
+
+        # Devolver una respuesta con éxito y los detalles del usuario
+        return Response({
+            "message": "Registro exitoso. Bienvenido",
+            "user": serializer.data
+        }, status=status.HTTP_201_CREATED)
+
+
+class CheckAuthenticatedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "Estás autenticado correctamente"}, status=status.HTTP_200_OK)
+
+
+class LoginApiView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+
+        # Validar los datos de entrada
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Obtener los datos validados
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+
+        # Autenticar al usuario
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            # Si la autenticación es exitosa, iniciar sesión
+            login(request, user)
+            return Response({
+                "message": "Inicio de sesión exitoso. Bienvenido",
+                "user_id": user.id,
+                "username": user.username
+            }, status=status.HTTP_200_OK)
+        else:
+            # Si la autenticación falla, enviar un mensaje de error
+            return Response({
+                "error": "Credenciales inválidas"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutApiView(APIView):
+    def post(self, request):
+        # Cierra la sesión del usuario
+        logout(request)
+        return Response({"message": "Sesión cerrada exitosamente."}, status=status.HTTP_200_OK)
+
+
+class UserProfileUpdateApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Obtiene el usuario autenticado
+        return self.request.user
+
+    def put(self, request):
+        user = self.get_object()
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "message": "Perfil actualizado correctamente",
+                "user": serializer.data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#class UserCreateApiView(CreateAPIView):
+ #   queryset = User.objects.all()
+  #  serializer_class = UserCreateSerializer
+
+class PasswordChangeApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            # Cambia la contraseña del usuario autenticado
+            request.user.set_password(serializer.validated_data['new_password'])
+            request.user.save()
+
+            # Mantener al usuario autenticado después del cambio de contraseña
+            update_session_auth_hash(request, request.user)
+
+            return Response({"message": "Contraseña cambiada exitosamente."}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
