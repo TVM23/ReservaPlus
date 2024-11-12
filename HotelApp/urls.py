@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import agregar_habitacion, lista_habitaciones, editar_habitacion, eliminar_habitacion, home, \
     redirect_to_home, crear_servicio_view, listar_servicios_view, actualizar_servicio_view, eliminar_servicio_view, \
-    lista_habitaciones2, detalle_habitacion
+    lista_habitaciones2, detalle_habitacion, ListaHabitacionesDisponiblesApiView,DetalleHabitacionApiView
 from . import views
 
 urlpatterns = [
@@ -27,5 +27,9 @@ urlpatterns = [
 
     # APIs
     path('api/servicios/', views.servicios_cartas_api, name='servicios_cartas_api'),
+    path('api/lista-habitaciones-disponibles/', ListaHabitacionesDisponiblesApiView.as_view(),
+         name='lista_habitaciones_disponibles'),
+    path('api/detalle-habitacion/<int:habitacion_id>/', DetalleHabitacionApiView.as_view(),
+         name='detalle_habitacion_api'),
 
 ]

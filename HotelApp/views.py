@@ -9,7 +9,12 @@ from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ServiciosSerializer
-
+from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime
 
 @login_required
 def agregar_habitacion(request):
@@ -357,3 +362,147 @@ def servicios_cartas_api(request):
     # Devolvemos la respuesta JSON
     return Response(serializer.data)
 
+
+#Parte de la reservas
+
+class ListaHabitacionesDisponiblesApiView(APIView):
+    def get(self, request):
+        fecha_inicio = request.query_params.get('fecha_inicio')
+        fecha_final = request.query_params.get('fecha_final')
+
+        if not fecha_inicio or not fecha_final:
+            return Response(
+                {"error": "Faltan los parámetros de fecha_inicio y/o fecha_final."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            fecha_inicio = datetime.fromisoformat(fecha_inicio)
+            fecha_final = datetime.fromisoformat(fecha_final)
+        except ValueError:
+            return Response(
+                {"error": "Formato de fecha inválido. Use el formato ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Filtra las reservas que caen dentro del rango de fechas
+        reservas = Reserva.objects.filter(
+            Q(fecha_inicio_reserva__lt=fecha_final) &
+            Q(fecha_final_reserva__gt=fecha_inicio) &
+            ~Q(estado="cancelada")
+        )
+
+        # Obtiene los números de habitación ocupados
+        numeros_ocupados = reservas.values_list('Numero_de_habitacion', flat=True)
+
+        # Filtra los detalles de habitaciones que no están ocupadas
+        detalles_disponibles = DetalleHabitacion.objects.exclude(Numero_de_habitacion__in=numeros_ocupados)
+
+        # Crea un diccionario para almacenar solo el primer detalle disponible por cada tipo de habitación
+        habitaciones_con_detalle = {}
+        for detalle in detalles_disponibles:
+            habitacion_id = detalle.habitacion.id
+            if habitacion_id not in habitaciones_con_detalle:
+                habitaciones_con_detalle[habitacion_id] = detalle
+
+        # Convierte el diccionario a una lista de detalles de habitaciones disponibles
+        habitaciones_disponibles = [
+            {
+                "id": detalle.habitacion.id,
+                "nombre": detalle.habitacion.nombre,
+                "precio": detalle.habitacion.precio,
+                "cupo": detalle.habitacion.cupo,
+                "ubicacion": detalle.ubicacion,
+                "ventanas": detalle.ventanas,
+                "camas": detalle.camas,
+                "numero_de_camas": detalle.numero_de_camas,
+                "aire_acondicionado": detalle.aire_acondicionado,
+                "jacuzzi": detalle.jacuzzi,
+                "Numero_de_habitacion": detalle.Numero_de_habitacion,
+                "disponibilidad": detalle.disponibilidad
+            }
+            for detalle in habitaciones_con_detalle.values()
+        ]
+
+        # Retorna la respuesta con habitaciones y fechas
+        return Response(
+            {
+                "habitaciones_disponibles": habitaciones_disponibles,
+                "fecha_inicio": fecha_inicio.isoformat(),
+                "fecha_final": fecha_final.isoformat()
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class DetalleHabitacionApiView(APIView):
+    def get(self, request, habitacion_id):
+        # Obtener la habitación por su ID
+        habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+
+        # Obtener las fechas desde los parámetros GET
+        fecha_inicio = request.query_params.get('fecha_inicio')
+        fecha_final = request.query_params.get('fecha_final')
+
+        if not fecha_inicio or not fecha_final:
+            return Response(
+                {"error": "Faltan los parámetros de fecha_inicio y/o fecha_final."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            fecha_inicio = datetime.fromisoformat(fecha_inicio)
+            fecha_final = datetime.fromisoformat(fecha_final)
+        except ValueError:
+            return Response(
+                {"error": "Formato de fecha inválido. Use el formato ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Filtrar reservas para las fechas proporcionadas
+        reservas = Reserva.objects.filter(
+            Q(fecha_inicio_reserva__lt=fecha_final) &
+            Q(fecha_final_reserva__gt=fecha_inicio) &
+            ~Q(estado="cancelada")
+        )
+
+        # Obtener los números de habitación ocupados
+        numeros_ocupados = reservas.values_list('Numero_de_habitacion', flat=True)
+
+        # Filtrar los detalles de la habitación que están disponibles
+        detalle = DetalleHabitacion.objects.filter(
+            habitacion=habitacion,
+            disponibilidad='disponible'  # Verificar que esté disponible
+        ).exclude(
+            Numero_de_habitacion__in=numeros_ocupados  # Excluir los números ocupados
+        ).first()
+
+        if detalle:
+            response_data = {
+                "habitacion": {
+                    "id": habitacion.id,
+                    "nombre": habitacion.nombre,
+                    "precio": habitacion.precio,
+                    "cupo": habitacion.cupo,
+                },
+                "detalle": {
+                    "Numero_de_habitacion": detalle.Numero_de_habitacion,
+                    "ubicacion": detalle.ubicacion,
+                    "ventanas": detalle.ventanas,
+                    "camas": detalle.camas,
+                    "numero_de_camas": detalle.numero_de_camas,
+                    "aire_acondicionado": detalle.aire_acondicionado,
+                    "jacuzzi": detalle.jacuzzi,
+                    "disponibilidad": detalle.disponibilidad,
+                },
+                "fecha_inicio": fecha_inicio.isoformat(),
+                "fecha_final": fecha_final.isoformat()
+            }
+        else:
+            response_data = {
+                "mensaje": "No hay detalles disponibles para esta habitación en las fechas solicitadas.",
+                "fecha_inicio": fecha_inicio.isoformat(),
+                "fecha_final": fecha_final.isoformat()
+            }
+
+        return Response(response_data, status=status.HTTP_200_OK)
