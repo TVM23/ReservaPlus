@@ -3,25 +3,28 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password1 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    password2 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2', 'first_name', 'last_name', 'email']
 
     def validate(self, data):
+        # Validar que las contraseñas coincidan
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError({"password": "Las contraseñas no coinciden."})
+            raise serializers.ValidationError("Las contraseñas no coinciden.")
         return data
 
     def create(self, validated_data):
+        # Crear el usuario con los campos proporcionados
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password1']
+            password=validated_data['password1'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            email=validated_data.get('email', '')
         )
-        user.is_active = True  # Activa el usuario directamente
         return user
 
 
