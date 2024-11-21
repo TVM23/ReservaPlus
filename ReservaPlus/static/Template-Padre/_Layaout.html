@@ -156,10 +156,38 @@
         const chatbotForm = document.getElementById('chatbot-form');
         const chatbotInput = document.getElementById('chatbot-input');
         const chatbotMessages = document.querySelector('.chatbot-messages');
+        let userName = '';
+        let welcomeMessageSent = false;
+
+        // Función para mostrar el mensaje de bienvenida
+        function showWelcomeMessage(name = '') {
+            if (!welcomeMessageSent) {
+                const message = name
+                    ? `¡Hola ${name}! Soy Roomie. ¿En qué puedo ayudarte hoy?`
+                    : '¡Hola! Soy Roomie. ¿En qué puedo ayudarte hoy?';
+                addMessage('bot', message);
+                welcomeMessageSent = true;
+            }
+        }
+
+        // Fetch user name when the page loads
+        fetch('/get_user_name/')
+            .then(response => response.json())
+            .then(data => {
+                userName = data.name;
+                showWelcomeMessage(userName);
+            })
+            .catch(error => {
+                console.error('Error fetching user name:', error);
+                showWelcomeMessage();
+            });
 
         // Mostrar u ocultar la ventana del chatbot
         chatbotToggle.addEventListener('click', function() {
             chatbotWindow.classList.toggle('hidden');
+            if (!chatbotWindow.classList.contains('hidden') && !welcomeMessageSent) {
+                showWelcomeMessage(userName);
+            }
         });
 
         // Cerrar el chatbot
@@ -181,19 +209,31 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}' // Asegúrate de incluir el token CSRF
+                        'X-CSRFToken': getCookie('csrftoken') // Función para obtener el token CSRF
                     },
-                    body: JSON.stringify({ message: userMessage }) // Enviar el mensaje en formato JSON
+                    body: JSON.stringify({
+                        message: userMessage,
+                        userName: userName // Include the user's name in the request
+                    })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    // Mostrar la respuesta del chatbot en la ventana de chat
-                    addMessage('bot', data.reply);
+                    if (data.reply) {
+                        // Mostrar la respuesta del chatbot en la ventana de chat
+                        addMessage('bot', data.reply);
+                    } else {
+                        throw new Error('Respuesta vacía del servidor');
+                    }
                 })
                 .catch(error => {
                     // Mostrar mensaje de error en caso de fallo
-                    addMessage('bot', 'Lo siento, hubo un error al procesar tu mensaje.');
                     console.error('Error:', error);
+                    addMessage('bot', 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo más tarde.');
                 });
 
                 // Limpiar el campo de entrada del usuario
@@ -201,16 +241,37 @@
             }
         });
 
-        // Función para añadir mensajes al chat
-        function addMessage(sender, text) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-            messageDiv.textContent = text;
-            chatbotMessages.appendChild(messageDiv);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Desplazar el chat hacia abajo
+        // Función para agregar mensajes a la ventana de chat
+        function addMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            messageElement.textContent = message;
+            chatbotMessages.appendChild(messageElement);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         }
+
+        // Función para obtener el token CSRF
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Limpiar mensajes existentes al cargar la página
+        chatbotMessages.innerHTML = '';
     });
 </script>
+<!-- Fin del Chatbot -->
+
 <!-- OJO del password -->
 
    <script>

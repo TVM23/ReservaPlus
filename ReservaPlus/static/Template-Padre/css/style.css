@@ -508,6 +508,8 @@ p a:hover {
     flex-grow: 1;
     overflow-y: auto;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .message {
@@ -515,18 +517,20 @@ p a:hover {
     padding: 8px 12px;
     border-radius: 20px;
     max-width: 80%;
+    word-wrap: break-word;
 }
 
 .bot-message {
     background-color: #f1f0f0;
     align-self: flex-start;
+    border-bottom-left-radius: 5px;
 }
 
 .user-message {
     background-color: #007bff;
     color: white;
     align-self: flex-end;
-    margin-left: auto;
+    border-bottom-right-radius: 5px;
 }
 
 .chatbot-form {
@@ -555,7 +559,6 @@ p a:hover {
     align-items: center;
     justify-content: center;
 }
-
 
 /* FIN DEL CSS PARA EL CHAT BOT*/
 

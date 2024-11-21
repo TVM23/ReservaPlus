@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 from django.core.validators import RegexValidator
 from dotenv import load_dotenv
@@ -48,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -103,11 +104,14 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',  # Para autenticación con sesión (basada en cookies)
-    ],
-
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',  # Autenticación con Token
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  # Requiere autenticación por defecto
+    ),
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -164,16 +168,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-#Tadeo
-#STRIPE_PUBLIC_KEY = "pk_test_51QFkMPKvS0f4VleL59dUP9Bj2769IfA3Y8F0cRmfKEBT6fKNiFhh6E9AoIlPSugznThUhC4wF1skFMEAwyZTShkf006dIcIPlN"
-#STRIPE_SECRET_KEY = "sk_test_51QFkMPKvS0f4VleLfLkDvKSS7xuZtzAlnKwT9lufWFKDhfoydKofsxK2JytCHtSfXHXf8HJqk1bxfsdJnurgpmWc00OUNzmsq8"
-#STRIPE_WEBHOOK_KEY = "whsec_12520e83f7b59ea52b6148c288e1c13707a65a47c96586036ba4c6ec02ad0b16"
+# Tadeo
+# STRIPE_PUBLIC_KEY = "pk_test_51QFkMPKvS0f4VleL59dUP9Bj2769IfA3Y8F0cRmfKEBT6fKNiFhh6E9AoIlPSugznThUhC4wF1skFMEAwyZTShkf006dIcIPlN"
+# STRIPE_SECRET_KEY = "sk_test_51QFkMPKvS0f4VleLfLkDvKSS7xuZtzAlnKwT9lufWFKDhfoydKofsxK2JytCHtSfXHXf8HJqk1bxfsdJnurgpmWc00OUNzmsq8"
+# STRIPE_WEBHOOK_KEY = "whsec_12520e83f7b59ea52b6148c288e1c13707a65a47c96586036ba4c6ec02ad0b16"
 
 
-#JP
+# JP
 STRIPE_PUBLIC_KEY = "pk_test_51QJOLkH5Mp9m8YH9ZXMCOsb8fvn7arRntaI78kMuWirxsKHHma6UfTxUrihVYk622Z4FKnEwwz9sLar8UscwDxD300CHCD3Qw6"
 STRIPE_SECRET_KEY = "sk_test_51QJOLkH5Mp9m8YH9PJq3IOtdlaDjs0H2kFaRIhNY9fYWC3WoKXKyr46Zcnhu7hGZOOKz16RZ6Sxq3n7xeP8rQtfo00Rw51VY8X"
 STRIPE_WEBHOOK_KEY = "whsec_8c92d33c2a16abe5e1f6dbd4bbd58e69c60b1d862418360d7c66e197318505c3"
-
 
 DOMAIN = 'http://127.0.0.1:8000/'
