@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+
+from decouple import config
 from django.core.validators import RegexValidator
 from dotenv import load_dotenv
 
@@ -145,10 +147,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'
 
 USE_I18N = True
-
 USE_TZ = True
 APPEND_SLASH = True
 
@@ -168,15 +170,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Tadeo
-# STRIPE_PUBLIC_KEY = "pk_test_51QFkMPKvS0f4VleL59dUP9Bj2769IfA3Y8F0cRmfKEBT6fKNiFhh6E9AoIlPSugznThUhC4wF1skFMEAwyZTShkf006dIcIPlN"
-# STRIPE_SECRET_KEY = "sk_test_51QFkMPKvS0f4VleLfLkDvKSS7xuZtzAlnKwT9lufWFKDhfoydKofsxK2JytCHtSfXHXf8HJqk1bxfsdJnurgpmWc00OUNzmsq8"
-# STRIPE_WEBHOOK_KEY = "whsec_12520e83f7b59ea52b6148c288e1c13707a65a47c96586036ba4c6ec02ad0b16"
+# Configuración de Cloudinary
+CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET')
 
-
-# JP
-STRIPE_PUBLIC_KEY = "pk_test_51QJOLkH5Mp9m8YH9ZXMCOsb8fvn7arRntaI78kMuWirxsKHHma6UfTxUrihVYk622Z4FKnEwwz9sLar8UscwDxD300CHCD3Qw6"
-STRIPE_SECRET_KEY = "sk_test_51QJOLkH5Mp9m8YH9PJq3IOtdlaDjs0H2kFaRIhNY9fYWC3WoKXKyr46Zcnhu7hGZOOKz16RZ6Sxq3n7xeP8rQtfo00Rw51VY8X"
-STRIPE_WEBHOOK_KEY = "whsec_8c92d33c2a16abe5e1f6dbd4bbd58e69c60b1d862418360d7c66e197318505c3"
+# Variables de Stripe
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_KEY = config('STRIPE_WEBHOOK_KEY')
 
 DOMAIN = 'http://127.0.0.1:8000/'

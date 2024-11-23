@@ -6,7 +6,9 @@ class Habitacion(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)  # Campo decimal para el precio
     cupo = models.IntegerField()  # Entero para el cupo de personas
     imagen = models.ImageField(upload_to='habitaciones/', null=True, blank=True)
-    # imagen = models.ImageField(upload_to='habitaciones/')
+    slug = models.SlugField(max_length=250, blank=True, null=True)  # secure_url de la img en cloudinary
+    public_id_img = models.SlugField(max_length=250, blank=True, null=True)  # public_id de la img en cloudinary
+
 
     def __str__(self):
         return self.nombre
@@ -31,6 +33,8 @@ class Servicios(models.Model):
     imagen = models.ImageField(upload_to='servicios/', null=True, blank=True)
     disponibilidad=models.BooleanField(default=False)
     precio = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    slug = models.SlugField(max_length=250, blank=True, null=True)  # secure_url de la img en cloudinary
+    public_id_img = models.SlugField(max_length=250, blank=True, null=True)  # public_id de la img en cloudinary
 
     def __str__(self):
         return self.nombre

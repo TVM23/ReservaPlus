@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.timezone import make_aware
 
 from HotelApp.models import *
 from django.utils import timezone
@@ -157,6 +158,26 @@ def detalle_reserva(request, reserva_id):
         # Cambiar la disponibilidad de la habitación basada en el estado de la reserva
         if nuevo_estado == 'en curso':
             detalle_habitacion.disponibilidad = 'ocupada'
+        elif nuevo_estado == 'cancelada':
+            detalle_habitacion.disponibilidad = 'disponible'
+            # Obtén el pago asociado a la reserva
+            pago = reserva.pagos.filter(estado="completado").first()
+             # Procesa el reembolso si el pago está completado
+            if pago:
+                try:
+                    reembolso = stripe.Refund.create(
+                        payment_intent=pago.transaccion_id  # Usa el ID de transacción de Stripe
+                    )
+                    # Actualiza el estado del pago a "reembolsado"
+                    pago.estado = "reembolsado"
+                    pago.save()
+                    messages.success(request,
+                                     "La reserva ha sido cancelada y el reembolso se ha procesado exitosamente.")
+                except stripe.error.StripeError as e:
+                    messages.error(request, f"Error al procesar el reembolso: {e}")
+            else:
+                messages.info(request,
+                              "La reserva fue cancelada, pero no se encontró un pago completado para reembolsar.")
         else:
             detalle_habitacion.disponibilidad = 'disponible'
 
@@ -190,9 +211,23 @@ def reservas_usuario(request):
         for reserva in reservas:
             habitaciones_reserva = HabitacionesReservas.objects.filter(reserva=reserva)
             servicios_reserva = ServiciosReservas.objects.filter(reserva=reserva)
+            habitaciones_info = []
+
+            for habitacion_reservada in habitaciones_reserva:
+                resena = Reseña.objects.filter(
+                    usuario=usuario,
+                    habitacion_reservada=habitacion_reservada,
+                    reserva=reserva
+                ).first()
+
+                habitaciones_info.append({
+                    'habitacion': habitacion_reservada,
+                    'resena': resena  # Agregar reseña directamente aquí
+                })
+
             reservas_info.append({
                 'reserva': reserva,
-                'habitaciones': habitaciones_reserva,
+                'habitaciones': habitaciones_info,  # Cambiar a información detallada
                 'servicios': servicios_reserva,
                 'usuario_id': usuario.id,
             })
@@ -287,6 +322,28 @@ def checkout_session(request):
             user_email = request.user.email
             numero_de_habitacion = request.POST.get('numero_de_habitacion')
 
+            # Obtener datos de la habitación y servicios
+            habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+            costo_servicios = sum(
+                Servicios.objects.get(id=servicio_id).precio for servicio_id in servicios_seleccionados
+            )
+            costo_total = calcular_costo(habitacion.precio, fecha_inicio, fecha_final) + costo_servicios
+            user_email = request.user.email
+
+            # Crear una descripción detallada de los servicios seleccionados
+            descripcion_servicios = ', '.join(
+                Servicios.objects.get(id=servicio_id).nombre for servicio_id in servicios_seleccionados
+            )
+
+            # Crear descripción personalizada para el `line_item`
+            descripcion_habitacion = f"""
+                            Habitación: {habitacion.nombre} \n
+                            Número de Habitación: {numero_de_habitacion} \n
+                            Fechas: {fecha_inicio_str} a {fecha_final_str} \n
+                            Personas: {numero_personas} \n
+                            Servicios: {descripcion_servicios if descripcion_servicios else 'Ninguno'} \n
+                        """.strip()
+
             # Crear sesión de checkout de Stripe
             checkout_session = stripe.checkout.Session.create(
                 line_items=[
@@ -295,9 +352,9 @@ def checkout_session(request):
                             'currency': 'mxn',
                             'unit_amount': int(costo_total * 100),
                             'product_data': {
-                                'name': habitacion.nombre,
-                                'description': f'Numero personas: {numero_personas}',
-                                'images': [habitacion.imagen],
+                                'name': f'Reserva - {habitacion.nombre}',
+                                'description': descripcion_habitacion[:500],  # Stripe permite máx. 500 caracteres
+                                'images': [habitacion.slug],
                             },
                         },
                         'quantity': 1,
@@ -363,8 +420,8 @@ def stripe_webhook(request):
         numero_de_habitacion = session['metadata']['numero_de_habitacion']
 
         # Convertir fechas
-        fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
-        fecha_final = datetime.fromisoformat(fecha_final_str)
+        fecha_inicio = make_aware(datetime.fromisoformat(fecha_inicio_str))
+        fecha_final = make_aware(datetime.fromisoformat(fecha_final_str))
 
         # Obtener los modelos necesarios
         habitacion = Habitacion.objects.get(id=habitacion_id)
@@ -554,7 +611,7 @@ class CheckoutSessionAPIView(APIView):
                         'product_data': {
                             'name': habitacion.nombre,
                             'description': f'Numero personas: {numero_personas}',
-                            'images': [habitacion.imagen.url],
+                            'images': [habitacion.slug],
                         },
                     },
                     'quantity': 1,
@@ -607,8 +664,10 @@ def stripe_webhookAPI(request):
         numero_de_habitacion = int(session['metadata']['numero_de_habitacion'])
 
         # Convertir fechas
-        fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
-        fecha_final = datetime.fromisoformat(fecha_final_str)
+        # fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
+        # fecha_final = datetime.fromisoformat(fecha_final_str)
+        fecha_inicio = make_aware(datetime.fromisoformat(fecha_inicio_str))
+        fecha_final = make_aware(datetime.fromisoformat(fecha_final_str))
 
         # Crear reserva y registrar detalles en la base de datos
         usuario = User.objects.get(id=user_id)
@@ -669,31 +728,40 @@ class ReservasUsuarioApiView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Validar que el usuario no sea superuser o staff
         if request.user.is_superuser or request.user.is_staff:
             return Response({'detail': 'Acceso denegado'}, status=status.HTTP_403_FORBIDDEN)
 
         usuario = request.user
-        # Filtrar reservas del usuario en estado "pendiente" o "en curso"
         reservas = Reserva.objects.filter(usuario=usuario, estado__in=['pendiente', 'en curso'])
 
-        # Estructurar la respuesta
         reservas_info = []
         for reserva in reservas:
-            # Obtener habitaciones y servicios asociados a cada reserva
             habitaciones_reserva = HabitacionesReservas.objects.filter(reserva=reserva)
             servicios_reserva = ServiciosReservas.objects.filter(reserva=reserva)
 
-            # Serializar la información de reserva, habitaciones y servicios
-            reserva_data = {
+            habitaciones_info = []
+            for habitacion_reservada in habitaciones_reserva:
+                # Obtener la reseña asociada, si existe
+                resena = Reseña.objects.filter(
+                    usuario=usuario,
+                    habitacion_reservada=habitacion_reservada,
+                    reserva=reserva
+                ).first()
+
+                habitaciones_info.append({
+                    'habitacion': HabitacionesReservasSerializer(habitacion_reservada).data,
+                    'resena': ReseñaSerializer(resena).data if resena else None,  # Serializar la reseña si existe
+                })
+
+            reservas_info.append({
                 'reserva': ReservaSerializer(reserva).data,
-                'habitaciones': HabitacionesReservasSerializer(habitaciones_reserva, many=True).data,
+                'habitaciones': habitaciones_info,
                 'servicios': ServiciosReservasSerializer(servicios_reserva, many=True).data,
                 'usuario_id': usuario.id,
-            }
-            reservas_info.append(reserva_data)
+            })
 
         return Response({'reservas_info': reservas_info}, status=status.HTTP_200_OK)
+
 
 
 class CrearResenaApiView(APIView):

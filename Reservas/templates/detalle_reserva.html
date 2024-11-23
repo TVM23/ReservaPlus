@@ -29,7 +29,11 @@
 
     <div class="mb-3">
         <label for="estado" class="form-label"><strong>Estado:</strong></label>
-        <select name="estado" id="estado" class="form-select">
+        {% if reserva.estado == 'cancelada' or  reserva.estado == 'completada' %}
+            <select name="estado" id="estado" class="form-select" disabled>
+        {% else %}
+            <select name="estado" id="estado" class="form-select">
+        {% endif %}
             <option value="pendiente" {% if reserva.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
             <option value="en curso" {% if reserva.estado == 'en curso' %}selected{% endif %}>En curso</option>
             <option value="cancelada" {% if reserva.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>

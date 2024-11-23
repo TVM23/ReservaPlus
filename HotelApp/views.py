@@ -1,3 +1,11 @@
+import os
+import uuid
+from datetime import datetime
+
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -11,10 +19,17 @@ from rest_framework.response import Response
 from .serializers import ServiciosSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from datetime import datetime
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+
+# Configuration
+cloudinary.config(
+    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+    api_key=settings.CLOUDINARY_API_KEY,
+    api_secret=settings.CLOUDINARY_API_SECRET,
+    secure=True
+)
 
 @login_required
 def agregar_habitacion(request):
@@ -25,34 +40,32 @@ def agregar_habitacion(request):
         precio = request.POST.get('precio')
         cupo = request.POST.get('cupo')
         imagen = request.FILES.get('imagen')
+        slug = None
+        public_id_img = None
+
+        if imagen:
+            # Generar un nombre único para la imagen
+            extension = os.path.splitext(imagen.name)[1]  # Obtener la extensión (por ejemplo, .jpg o .png)
+            nombre_imagen = nombre.replace(" ", "_").lower()
+            nuevo_nombre = f"{nombre_imagen}_{uuid.uuid4()}{extension}"  # Crear un nuevo nombre único
+            imagen.name = nuevo_nombre  # Asignar el nuevo nombre al archivo
+            upload_result = cloudinary.uploader.upload(
+                imagen,
+                asset_folder="reservaplus/" + "habitaciones/",
+                public_id=imagen.name.split('.')[0],
+                resource_type="image"
+            )
+            slug = upload_result["secure_url"]
+            public_id_img = upload_result["public_id"]
 
         # Crear la nueva habitación
-        nueva_habitacion = Habitacion(nombre=nombre, precio=precio, cupo=cupo, imagen=imagen)
+        nueva_habitacion = Habitacion(nombre=nombre, precio=precio, cupo=cupo, imagen=imagen, slug=slug, public_id_img=public_id_img)
         nueva_habitacion.save()
 
         # Redirigir a la vista de lista de habitaciones
         return redirect('lista_habitaciones')  # Asegúrate que esta URL esté definida en urls.py
 
     return render(request, 'agregar_habitacion.html')
-
-
-"""
-
-@login_required
-def agregar_habitacion(request):
-    if not request.user.is_superuser and not request.user.is_staff:
-        return redirect('acceso_denegado')
-    if request.method == 'POST':
-        form = HabitacionForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('lista_habitaciones')  # Redirige a una lista o página de éxito
-    else:
-        form = HabitacionForm()
-
-    return render(request, 'agregar_habitacion.html', {'form': form})
-
-"""
 
 
 @login_required
@@ -68,13 +81,41 @@ def editar_habitacion(request, id):
     if not request.user.is_superuser and not request.user.is_staff:
         return redirect('acceso_denegado')
 
-    habitacion = Habitacion.objects.get(id=id)
+    habitacion = get_object_or_404(Habitacion, id=id)
+
     if request.method == 'POST':
         habitacion.nombre = request.POST.get('nombre')
         habitacion.precio = request.POST.get('precio')
         habitacion.cupo = request.POST.get('cupo')
+
         if request.FILES.get('imagen'):
-            habitacion.imagen = request.FILES.get('imagen')
+            nueva_imagen = request.FILES.get('imagen')
+            extension = os.path.splitext(nueva_imagen.name)[1]
+            nombre_imagen = habitacion.nombre.replace(" ", "_").lower()
+            nuevo_nombre = f"{nombre_imagen}_{uuid.uuid4()}{extension}"  # Crear un nuevo nombre único
+            nueva_imagen.name = nuevo_nombre
+            if habitacion.public_id_img:  # Solo si existe un public_id
+                try:
+                    cloudinary.uploader.destroy(habitacion.public_id_img) # Se elimina imagen del cloudinary
+                except Exception as e:
+                    print(f"Error al eliminar la imagen antigua: {e}")
+            upload_result = cloudinary.uploader.upload(
+                nueva_imagen,
+                asset_folder="reservaplus/" + "habitaciones/",
+                public_id=nueva_imagen.name.split('.')[0],
+                resource_type="image"
+            )
+            habitacion.slug = upload_result["secure_url"]
+            habitacion.public_id_img = upload_result["public_id"]
+
+            # Eliminar la imagen anterior si existe
+            if habitacion.imagen:
+                if os.path.isfile(habitacion.imagen.path):
+                    os.remove(habitacion.imagen.path)
+
+            # Asignar la nueva imagen
+            habitacion.imagen = nueva_imagen
+
         habitacion.save()
         return redirect('lista_habitaciones')
 
@@ -88,6 +129,15 @@ def eliminar_habitacion(request, id):
 
     habitacion = Habitacion.objects.get(id=id)
     if request.method == 'POST':
+        if habitacion.public_id_img:  # Solo si existe un public_id
+            try:
+                cloudinary.uploader.destroy(habitacion.public_id_img)  # Se elimina imagen del cloudinary
+            except Exception as e:
+                print(f"Error al eliminar la imagen: {e}")
+
+        if habitacion.imagen:  # Verificar si la habitación tiene una imagen
+            if os.path.isfile(habitacion.imagen.path):  # Verificar si el archivo existe
+                os.remove(habitacion.imagen.path)  # Eliminar el archivo físico
         habitacion.delete()
         return redirect('lista_habitaciones')
 
@@ -201,9 +251,26 @@ def crear_servicio_view(request):
         imagen = request.FILES.get('imagen')
         disponibilidad = request.POST.get('disponibilidad') == 'on'  # Convertir a boolean
         precio = request.POST['precio']
+        slug = None
+        public_id_img = None
+
+        if imagen:
+            # Generar un nombre único para la imagen
+            extension = os.path.splitext(imagen.name)[1]  # Obtener la extensión (por ejemplo, .jpg o .png)
+            nombre_imagen = nombre.replace(" ", "_").lower()
+            nuevo_nombre = f"{nombre_imagen}_{uuid.uuid4()}{extension}"  # Crear un nuevo nombre único
+            imagen.name = nuevo_nombre  # Asignar el nuevo nombre al archivo
+            upload_result = cloudinary.uploader.upload(
+                imagen,
+                asset_folder="reservaplus/" + "servicios/",
+                public_id=imagen.name.split('.')[0],
+                resource_type="image"
+            )
+            slug = upload_result["secure_url"]
+            public_id_img = upload_result["public_id"]
 
         servicio = Servicios(nombre=nombre, descripcion=descripcion, imagen=imagen, disponibilidad=disponibilidad,
-                             precio=precio)
+                             precio=precio, slug=slug, public_id_img=public_id_img)
         servicio.save()
         messages.success(request, 'Servicio creado exitosamente.')
         return redirect('listar_servicios')
@@ -231,7 +298,32 @@ def actualizar_servicio_view(request, pk):
         servicio.nombre = request.POST['nombre']
         servicio.descripcion = request.POST['descripcion']
         if 'imagen' in request.FILES:
-            servicio.imagen = request.FILES['imagen']
+            nueva_imagen = request.FILES['imagen']
+            extension = os.path.splitext(nueva_imagen.name)[1]  # Obtener la extensión de la imagen
+            nombre_imagen = servicio.nombre.replace(" ", "_").lower()
+            nuevo_nombre = f"{nombre_imagen}_{uuid.uuid4()}{extension}"  # Crear un nuevo nombre único
+            nueva_imagen.name = nuevo_nombre
+            if servicio.public_id_img:  # Solo si existe un public_id
+                try:
+                    cloudinary.uploader.destroy(servicio.public_id_img) # Se elimina imagen del cloudinary
+                except Exception as e:
+                    print(f"Error al eliminar la imagen antigua: {e}")
+            upload_result = cloudinary.uploader.upload(
+                nueva_imagen,
+                asset_folder="reservaplus/" + "servicios/",
+                public_id=nueva_imagen.name.split('.')[0],
+                resource_type="image"
+            )
+            servicio.slug = upload_result["secure_url"]
+            servicio.public_id_img = upload_result["public_id"]
+            # Eliminar la imagen anterior si existe
+            if servicio.imagen:
+                if os.path.isfile(servicio.imagen.path):  # Verificar que el archivo exista
+                    os.remove(servicio.imagen.path)  # Eliminar el archivo físico anterior
+
+            # Asignar la nueva imagen al servicio
+            servicio.imagen = nueva_imagen
+
         servicio.disponibilidad = request.POST.get('disponibilidad') == 'on'
         servicio.precio = request.POST['precio']
         servicio.save()
@@ -249,6 +341,14 @@ def eliminar_servicio_view(request, pk):
 
     servicio = get_object_or_404(Servicios, pk=pk)
     if request.method == 'POST':
+        if servicio.public_id_img:  # Solo si existe un public_id
+            try:
+                cloudinary.uploader.destroy(servicio.public_id_img)  # Se elimina imagen del cloudinary
+            except Exception as e:
+                print(f"Error al eliminar la imagen antigua: {e}")
+        if servicio.imagen:  # Verificar si el servicio tiene una imagen
+            if os.path.isfile(servicio.imagen.path):  # Verificar si el archivo existe
+                os.remove(servicio.imagen.path)  # Eliminar el archivo físico
         servicio.delete()
         messages.success(request, 'Servicio eliminado exitosamente.')
         return redirect('listar_servicios')
