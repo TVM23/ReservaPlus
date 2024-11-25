@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 from django.conf import settings
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -13,11 +14,9 @@ from Reservas.models import Reserva
 from .forms import HabitacionForm
 from django.db.models import Q
 from .models import Habitacion, DetalleHabitacion, Servicios
-from django.db import models
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ServiciosSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Q
 import cloudinary
 import cloudinary.uploader
@@ -453,19 +452,24 @@ def detalle_habitacion(request, habitacion_id):
 
 #APIS
 
-@api_view(['GET'])
-def servicios_cartas_api(request):
-    # Obtenemos todos los servicios
-    servicios = Servicios.objects.all()
-    # Serializamos los datos
-    serializer = ServiciosSerializer(servicios, many=True)
-    # Devolvemos la respuesta JSON
-    return Response(serializer.data)
+class ServiciosListApiView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    #permission_classes = [AllowAny]
+    def get(self, request):
+        # Obtener todos los servicios
+        servicios = Servicios.objects.all()
+        # Serializar los datos
+        serializer = ServiciosSerializer(servicios, many=True)
+        # Retornar la respuesta en JSON
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 #Parte de la reservas
 
 class ListaHabitacionesDisponiblesApiView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         fecha_inicio = request.query_params.get('fecha_inicio')
         fecha_final = request.query_params.get('fecha_final')
@@ -519,7 +523,8 @@ class ListaHabitacionesDisponiblesApiView(APIView):
                 "aire_acondicionado": detalle.aire_acondicionado,
                 "jacuzzi": detalle.jacuzzi,
                 "Numero_de_habitacion": detalle.Numero_de_habitacion,
-                "disponibilidad": detalle.disponibilidad
+                "disponibilidad": detalle.disponibilidad,
+                "slug": detalle.habitacion.slug
             }
             for detalle in habitaciones_con_detalle.values()
         ]
@@ -536,6 +541,8 @@ class ListaHabitacionesDisponiblesApiView(APIView):
 
 
 class DetalleHabitacionApiView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request, habitacion_id):
         # Obtener la habitación por su ID
         habitacion = get_object_or_404(Habitacion, id=habitacion_id)

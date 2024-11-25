@@ -26,7 +26,7 @@ urlpatterns = [
     path('home/', home, name='home'),  # Vista para el home
 
     # APIs
-    path('api/servicios/', views.servicios_cartas_api, name='servicios_cartas_api'),
+    path('api/servicios/', views.ServiciosListApiView.as_view(), name='servicios_cartas_api'),
     path('api/lista-habitaciones-disponibles/', ListaHabitacionesDisponiblesApiView.as_view(),
          name='lista_habitaciones_disponibles'),
     path('api/detalle-habitacion/<int:habitacion_id>/', DetalleHabitacionApiView.as_view(),
