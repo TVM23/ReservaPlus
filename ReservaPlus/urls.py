@@ -29,7 +29,7 @@ urlpatterns = [
                   path('HotelApp/', include('HotelApp.urls')),
                   path('Usuarios/', include('Usuarios.urls')),
                   path('Reservas/', include('Reservas.urls')),
-                  path('get-response/', chatbot_response, name='chatbot_response'),
+                  path('get-response/', views.chatbot_response, name='chatbot_response'),
                   path('get_user_name/', views.get_user_name, name='get_user_name'),
                   path('', redirect_to_home),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

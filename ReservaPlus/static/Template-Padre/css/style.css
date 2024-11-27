@@ -29,6 +29,11 @@ body {
     flex-direction: column;
 }
 
+
+.text-primary{
+    color: #57bdd3 !important;
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -169,11 +174,20 @@ body {
     padding: 0 1rem;
 }
 
+.btn{
+    padding: 0.75rem;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
-    padding: 0.75rem;
-    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
@@ -643,3 +657,101 @@ p a:hover {
 .service-box:hover {
     background-color: #e9ecef;
 }
+
+/* INICIA: Diseño del flatpickr //////////////////////////////////////// */
+
+.flatpickr-calendar {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem auto auto;
+}
+
+.flatpickr-day.selected {
+    background-color: #57bdd3;
+    color: white;
+    font-weight: bold;
+}
+
+.flatpickr-container {
+    display: block;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center; /* Centrado vertical (si es necesario) */
+}
+
+input#date_range {
+    text-align: center; /* Centra el texto dentro del campo */
+}
+
+/* Estilo para los iconos */
+.icon-detalle-hab {
+    font-size: 1.3rem;
+    margin-right: 10px;
+}
+
+/* FIN: Diseño del flatpickr //////////////////////////////////////// */
+
+
+
+/* INICIO: Habitacion detalle //////////////////////////////////////// */
+
+/* Imagen de la habitación */
+.img-det-hab {
+    height: 350px;
+    object-fit: cover;
+}
+
+/* Sombra y bordes en las tarjetas */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Detalles de la habitación */
+h3.text-primary {
+    font-weight: bold;
+    border-bottom: 2px solid #57bdd3;
+    padding-bottom: 10px;
+}
+
+.h3{
+    color: #57bdd3;
+}
+
+/* Estilo para los botones */
+.btn-lg {
+    font-size: 1.1rem;
+    padding: 12px 30px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+}
+
+/* Botónes  */
+.btn-gradient-success {
+    background: linear-gradient(45deg, #fec35f, #57bdd3);
+    color: white;
+    border: none;
+}
+
+.btn-gradient-success:hover {
+    background: linear-gradient(45deg, #57bdd3, #fec35f);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-dark {
+    border: 2px solid #343a40;
+    color: #343a40;
+}
+
+.btn-outline-dark:hover {
+    background-color: #343a40;
+    color: white;
+}
+
+/* INICIO: Habitacion detalle //////////////////////////////////////// */

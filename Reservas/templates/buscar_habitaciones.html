@@ -4,15 +4,119 @@
 
 {% block content %}
 
-    <form method="POST">
+    <!-- Flatpickr CSS -->
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
+<div class="form-register mt-5">
+    <h2 class="text-center">Selecciona tus Fechas de Reserva</h2>
+    <form method="POST" class="p-4 border rounded shadow-sm bg-light">
         {% csrf_token %}
-        <label for="fecha_inicio">Fecha de Inicio:</label>
-        <input type="date" name="fecha_inicio" required>
-        <br>
-        <label for="fecha_final">Fecha Final:</label>
-        <input type="date" name="fecha_final" required>
-        <br>
-        <button type="submit">Buscar</button>
+        <div class="mb-4 text-center"> <!-- Centrado del contenido -->
+            <label for="date_range" class="form-label">Rango de Fechas:</label>
+            <div class="flatpickr-container">
+                <input
+                    type="text"
+                    id="date_range"
+                    name="date_range"
+                    class="form-control text-center"
+                    placeholder="Selecciona el rango de fechas"
+                    required>
+            </div>
+        </div>
+        <div id="stay_info" class="text-center mt-3 text-muted" style="font-weight: bold;">
+            Selecciona tus fechas de reserva.
+        </div>
+        <div class="mt-3 text-center">
+            <button type="reset"  id="reset-button" class="btn btn-outline-secondary me-3">Limpiar</button>
+            <button type="submit" class="btn btn-primary">Confirmar</button>
+        </div>
     </form>
+</div>
+
+
+<!--
+<div class="container mt-5">
+    <h2 class="text-center">Selecciona tus Fechas de Reserva</h2>
+    <form method="POST" class="p-4 border rounded shadow-sm bg-light">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="fecha_inicio" class="form-label">Fecha de Inicio:</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="fecha_final" class="form-label">Fecha Final:</label>
+            <input type="date" id="fecha_final" name="fecha_final" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Buscar Disponibilidad</button>
+    </form>
+</div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fechaInicio = document.getElementById('fecha_inicio');
+            const fechaFinal = document.getElementById('fecha_final');
+
+            fechaFinal.addEventListener('change', function () {
+                const inicio = new Date(fechaInicio.value);
+                const final = new Date(fechaFinal.value);
+
+                if (final <= inicio) {
+                    alert("La fecha final debe ser posterior a la fecha de inicio.");
+                    fechaFinal.value = ''; // Resetea la fecha final
+                }
+            });
+        });
+    </script>   -->
+
+    <!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flatpickrInstance = flatpickr("#date_range", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            inline: true, // Displays the calendar inline (like in the image)
+            minDate: "today", // Prevent past dates
+            locale: {
+                firstDayOfWeek: 1, // Start week on Monday
+                weekdays: {
+                  shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+                  longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                },
+                months: {
+                  shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Оct', 'Nov', 'Dic'],
+                  longhand: ['Enero', 'Febreo', 'Мarzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                },
+
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+                const fechaInicio = document.getElementById('fecha_inicio');
+                const fechaFinal = document.getElementById('fecha_final');
+                const [startDate, endDate] = selectedDates;
+                instance.element.value = dateStr.replace('to', '-');
+                if (startDate && endDate) {
+                    fechaInicio.value = startDate
+                    fechaFinal.value = endDate
+                    const days = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
+                    document.getElementById("stay_info").innerText =
+                        `Tu estancia: ${dateStr} (${days} noches)`;
+                }
+            },
+        });
+        const resetButton = document.getElementById('reset-button');
+        resetButton.addEventListener('click', function (e) {
+            flatpickrInstance.clear();
+            document.getElementById("stay_info").innerText = "Selecciona tus fechas de reserva.";
+        });
+    });
+</script>
 
 {% endblock %}

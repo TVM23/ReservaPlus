@@ -28,6 +28,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 # Create your views here
+"""
 @login_required
 def buscar_habitaciones(request):
     if request.method == 'POST':
@@ -49,6 +50,34 @@ def buscar_habitaciones(request):
         return redirect('lista_habitaciones2',
                         fecha_inicio=fecha_inicio,
                         fecha_final=fecha_final)
+
+    return render(request, 'buscar_habitaciones.html')
+"""
+
+@login_required
+def buscar_habitaciones(request):
+    if request.method == 'POST':
+        # Obtén el rango de fechas enviado desde el formulario
+        date_range = request.POST.get('date_range')
+
+        # Dividir el rango en fecha_inicio y fecha_final
+        if date_range:
+            fechas = date_range.split(" - ")
+            fecha_inicio = fechas[0]
+            fecha_final = fechas[1]
+
+            # Busca las reservas que coinciden con el rango de fechas
+            reservas = Reserva.objects.filter(
+                (models.Q(fecha_inicio_reserva__lt=fecha_final) & models.Q(fecha_final_reserva__gt=fecha_inicio))
+            )
+
+            # Obtén los números de habitación ocupados
+            numeros_ocupados = reservas.values_list('Numero_de_habitacion', flat=True)
+
+            # Redirige a la vista lista_habitaciones2 pasando las fechas
+            return redirect('lista_habitaciones2',
+                            fecha_inicio=fecha_inicio,
+                            fecha_final=fecha_final)
 
     return render(request, 'buscar_habitaciones.html')
 

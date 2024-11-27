@@ -5,39 +5,64 @@
 {% block title %}Lista de Servicios - Reservas Plus{% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h1 class="text-center">{{ habitacion.nombre }}</h1>
 
-        {% if detalle %}
-            <div class="mb-4">
-                <h4>Detalles de la Habitación</h4>
-                <p><strong>Ubicación:</strong> {{ detalle.ubicacion }}</p>
-                <p><strong>Número de Ventanas:</strong> {{ detalle.ventanas }}</p>
-                <p><strong>Camas:</strong> {{ detalle.camas }}</p>
-                <p><strong>Número de Camas:</strong> {{ detalle.numero_de_camas }}</p>
-                <p><strong>Aire Acondicionado:</strong> {% if detalle.aire_acondicionado %}Sí{% else %}No{% endif %}</p>
-                <p><strong>Jacuzzi:</strong> {% if detalle.jacuzzi %}Sí{% else %}No{% endif %}</p>
-                <p><strong>Número de Habitación:</strong> {{ detalle.Numero_de_habitacion }}</p>
-                <p><strong>Disponibilidad:</strong> {{ detalle.disponibilidad }}</p>
+
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Imagen destacada de la habitación -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <img src="{{ habitacion.imagen.url }}" class="card-img-top img-det-hab rounded-4" alt="{{ habitacion.nombre }}">
+                </div>
             </div>
-        {% else %}
-            <p>No hay detalles disponibles para esta habitación.</p>
-        {% endif %}
 
-        <a href="{% url 'formulario_reserva' habitacion.id numero_de_habitacion %}?fecha_inicio={{ fecha_inicio }}&fecha_final={{ fecha_final }}"
-           class="btn btn-primary">Reservar</a>
+            <!-- Detalles de la habitación -->
+            <div class="col-lg-6">
+                <h1 class="display-4 text-dark font-weight-bold mb-4">{{ habitacion.nombre }}</h1>
+                <p class="lead text-muted mb-4">Precio: <strong class="text-primary">${{ habitacion.precio }}</strong> por noche</p>
+                <p class="text-muted mb-4">Cupo: <strong>{{ habitacion.cupo }} personas</strong></p>
 
+                {% if detalle %}
+                    <div class="card shadow-sm rounded-4 border-0 mb-4">
+                        <div class="card-body">
+                            <h3 class="text-primary font-weight-bold mb-3">Detalles de la Habitación</h3>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-map-marker-alt icon-detalle-hab text-success"></i> <strong>Ubicación:</strong> {{ detalle.ubicacion }}</li>
+                                        <li><i class="fas fa-window-maximize icon-detalle-hab text-warning"></i> <strong>Ventanas:</strong> {{ detalle.ventanas }}</li>
+                                        <li><i class="fas fa-bed icon-detalle-hab text-danger"></i> <strong>Camas:</strong> {{ detalle.camas }}</li>
+                                        <li><i class="fas fa-snowflake icon-detalle-hab text-primary"></i> <strong>Aire Acondicionado:</strong> {% if detalle.aire_acondicionado %}Sí{% else %}No{% endif %}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-hot-tub icon-detalle-hab text-danger"></i> <strong>Jacuzzi:</strong> {% if detalle.jacuzzi %}Sí{% else %}No{% endif %}</li>
+                                        <li><i class="fas fa-door-closed icon-detalle-hab text-dark"></i> <strong>Número de Habitación:</strong> {{ detalle.Numero_de_habitacion }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p>No hay detalles disponibles para esta habitación.</p>
+                {% endif %}
 
-        <a href="{% url 'lista_habitaciones2' fecha_inicio=fecha_inicio fecha_final=fecha_final %}"
-           class="btn btn-secondary">Volver a Habitaciones</a>
-
-
+                <!-- Botones de acción -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'formulario_reserva' habitacion.id numero_de_habitacion %}?fecha_inicio={{ fecha_inicio }}&fecha_final={{ fecha_final }}"
+                       class="btn btn-lg btn-gradient-success w-48">¡Reserva Ahora!</a>
+                    <a href="{% url 'lista_habitaciones2' fecha_inicio=fecha_inicio fecha_final=fecha_final %}"
+                       class="btn btn-outline-dark btn-lg w-48">Volver a Habitaciones</a>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 
 
 {% endblock %}

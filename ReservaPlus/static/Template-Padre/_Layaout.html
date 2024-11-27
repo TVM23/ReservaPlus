@@ -157,14 +157,15 @@
         const chatbotInput = document.getElementById('chatbot-input');
         const chatbotMessages = document.querySelector('.chatbot-messages');
         let userName = '';
+        let isLoggedIn = false;
         let welcomeMessageSent = false;
 
         // Función para mostrar el mensaje de bienvenida
         function showWelcomeMessage(name = '') {
             if (!welcomeMessageSent) {
-                const message = name
+                const message = isLoggedIn
                     ? `¡Hola ${name}! Soy Roomie. ¿En qué puedo ayudarte hoy?`
-                    : '¡Hola! Soy Roomie. ¿En qué puedo ayudarte hoy?';
+                    : '¡Hola Usuario! Soy Roomie. Para una experiencia personalizada, te invito a iniciar sesión. ¿En qué puedo ayudarte hoy?';
                 addMessage('bot', message);
                 welcomeMessageSent = true;
             }
@@ -174,11 +175,19 @@
         fetch('/get_user_name/')
             .then(response => response.json())
             .then(data => {
-                userName = data.name;
+                if (data.name) {
+                    userName = data.name;
+                    isLoggedIn = true;
+                } else {
+                    userName = 'Usuario';
+                    isLoggedIn = false;
+                }
                 showWelcomeMessage(userName);
             })
             .catch(error => {
                 console.error('Error fetching user name:', error);
+                userName = 'Usuario';
+                isLoggedIn = false;
                 showWelcomeMessage();
             });
 
@@ -205,36 +214,41 @@
                 addMessage('user', userMessage);
 
                 // Enviar el mensaje al servidor Django
-                fetch('/get-response/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken') // Función para obtener el token CSRF
-                    },
-                    body: JSON.stringify({
-                        message: userMessage,
-                        userName: userName // Include the user's name in the request
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.reply) {
-                        // Mostrar la respuesta del chatbot en la ventana de chat
-                        addMessage('bot', data.reply);
-                    } else {
-                        throw new Error('Respuesta vacía del servidor');
-                    }
-                })
-                .catch(error => {
-                    // Mostrar mensaje de error en caso de fallo
-                    console.error('Error:', error);
-                    addMessage('bot', 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo más tarde.');
-                });
+               fetch('/get-response/', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: JSON.stringify({
+        message: userMessage,
+        userName: userName
+    })
+})
+.then(response => {
+    if (!response.ok) {
+        if (response.status === 403) {
+            throw new Error('Usuario no autenticado');
+        }
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+})
+.then(data => {
+    if (data.reply) {
+        addMessage('bot', data.reply);
+    } else {
+        throw new Error('Respuesta vacía del servidor');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    if (error.message === 'Usuario no autenticado') {
+        addMessage('bot', 'Para una experiencia personalizada, te invito a iniciar sesión. ¿En qué puedo ayudarte mientras tanto?');
+    } else {
+        addMessage('bot', 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo más tarde.');
+    }
+});
 
                 // Limpiar el campo de entrada del usuario
                 chatbotInput.value = '';
@@ -271,6 +285,7 @@
     });
 </script>
 <!-- Fin del Chatbot -->
+
 
 <!-- OJO del password -->
 
