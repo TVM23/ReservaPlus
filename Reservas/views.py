@@ -56,6 +56,8 @@ def buscar_habitaciones(request):
 
 @login_required
 def buscar_habitaciones(request):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
     if request.method == 'POST':
         # Obtén el rango de fechas enviado desde el formulario
         date_range = request.POST.get('date_range')
@@ -94,6 +96,8 @@ def verificar_disponibilidad(habitacion, fecha_inicio, fecha_final):
 
 @login_required
 def formulario_reserva(request, habitacion_id, numero_de_habitacion):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
     servicios = Servicios.objects.filter(disponibilidad=True)
 
@@ -269,6 +273,8 @@ def reservas_usuario(request):
 
 @login_required
 def cancelar_reserva(request, reserva_id):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
     reserva = get_object_or_404(Reserva, id=reserva_id)
 
     # Verifica que el usuario sea el dueño de la reserva
@@ -304,6 +310,8 @@ def cancelar_reserva(request, reserva_id):
 
 @login_required
 def crear_resena(request, usuario_id, reserva_id, habitacion_id):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
     usuario = get_object_or_404(User, id=usuario_id)
     reserva = get_object_or_404(Reserva, id=reserva_id, usuario=usuario)
     habitacion_reservada = get_object_or_404(HabitacionesReservas, reserva=reserva, habitacion__id=habitacion_id)

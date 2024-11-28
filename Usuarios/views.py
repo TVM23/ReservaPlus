@@ -71,7 +71,10 @@ class LoginView(View):
             if next_url:
                 return redirect(next_url)
             else:
-                return redirect('home')
+                if user.is_superuser or user.is_staff:
+                    return redirect('dashboard')
+                else:
+                    return redirect('home')
 
         else:
             messages.error(request, 'Credenciales inválidas.')

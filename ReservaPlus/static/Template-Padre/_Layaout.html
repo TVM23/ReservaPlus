@@ -40,12 +40,14 @@
                 </a>
             </div>
             <ul class="navbar-menu">
-                <li class="navbar-item"><a href="{% url 'home' %}">Inicio</a></li>
-                <li class="navbar-item"><a href="{% url 'servicios_cartas' %}">Ver Servicios</a></li>
-
+                {% if not request.user.is_superuser and not request.user.is_staff %}
+                    <li class="navbar-item"><a href="{% url 'home' %}">Inicio</a></li>
+                    <li class="navbar-item"><a href="{% url 'servicios_cartas' %}">Ver Servicios</a></li>
+                {% endif %}
 
                 {% if request.user.is_authenticated %}
                     {% if request.user.is_staff or request.user.is_superuser %}
+                        <li class="navbar-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
                         <li class="navbar-item dropdown">
                             <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Habitaciones</a>
                             <ul class="dropdown-menu">
@@ -63,7 +65,7 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-                <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>
+                <!-- <li class="navbar-item"><a href="{% url 'home' %}">Contacto</a></li>  -->
 
                 {% if request.user.is_authenticated %}
                     {% if not request.user.is_superuser and not request.user.is_staff %}
@@ -80,7 +82,6 @@
                             <li><a class="dropdown-item" href="{% url 'user_profile' %}">Datos del usuario</a></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}" data-bs-toggle="modal"
                                    data-bs-target="#logoutModal">Cerrar Sesión</a></li>
-
                         </ul>
                     </li>
                 {% else %}

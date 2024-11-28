@@ -1,10 +1,12 @@
 from django.urls import path
 from .views import agregar_habitacion, lista_habitaciones, editar_habitacion, eliminar_habitacion, home, \
     redirect_to_home, crear_servicio_view, listar_servicios_view, actualizar_servicio_view, eliminar_servicio_view, \
-    lista_habitaciones2, detalle_habitacion, ListaHabitacionesDisponiblesApiView,DetalleHabitacionApiView
+    lista_habitaciones2, detalle_habitacion, ListaHabitacionesDisponiblesApiView, DetalleHabitacionApiView, \
+    dashboard_view
 from . import views
 
 urlpatterns = [
+    path('dashboard/', dashboard_view, name='dashboard'),
     path('agregar/', agregar_habitacion, name='agregar_habitacion'),
     path('habitaciones/', lista_habitaciones, name='lista_habitaciones'),
     path('habitaciones/editar/<int:id>/', editar_habitacion, name='editar_habitacion'),

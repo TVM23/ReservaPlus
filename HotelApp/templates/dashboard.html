@@ -1,0 +1,205 @@
+
+{% extends '_Layaout.html' %}
+
+{% block title %}Agregar Servicio - Reservas Plus{% endblock %}
+
+{% block content %}
+
+    <div class="container my-5">
+    <h1 class="text-center mb-5">Dashboard</h1>
+
+    <!-- Filtros -->
+    <form method="get" class="mb-5">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" value="{{ fecha_inicio|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <label for="fecha_final" class="form-label">Fecha de Fin</label>
+                <input type="date" id="fecha_final" name="fecha_final" class="form-control" value="{{ fecha_final|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Estadísticas Generales -->
+    <div class="row mb-5 text-center">
+        <div class="col-md-3">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h5>Total Habitaciones</h5>
+                    <p class="fs-3 fw-bold">{{ total_habitaciones }}</p>
+                    <i class="fas fa-bed fa-2x text-primary"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h5>Total Reservas</h5>
+                    <p class="fs-3 fw-bold">{{ total_reservas }}</p>
+                    <i class="fas fa-calendar-check fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h5>Ingresos Totales</h5>
+                    <p class="fs-3 fw-bold">${{ ingresos_totales }}</p>
+                    <i class="fas fa-dollar-sign fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <h5>Prom. de Calificaciones</h5>
+                    <p class="fs-3 fw-bold">{{ promedio_calificaciones }}</p>
+                    <i class="fas fa-star fa-2x text-danger"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Habitaciones Populares -->
+    <div class="mb-4">
+        <h3 class="text-center">Habitaciones Más Populares</h3>
+        <ul class="list-group shadow-sm">
+            {% for habitacion in habitaciones_populares %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ habitacion.nombre }}</span>
+                    <span class="badge bg-primary">{{ habitacion.total_reservas }} reservas</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Servicios Populares -->
+    <div>
+        <h3 class="text-center">Servicios Más Utilizados</h3>
+        <ul class="list-group shadow-sm">
+            {% for servicio in servicios_populares %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ servicio.nombre }}</span>
+                    <span class="badge bg-success">{{ servicio.total_usos }} usos</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Gráficos -->
+<div class="row mt-5">
+    <!-- Gráfico de Reservas por Estado -->
+    <div class="col-md-6 mb-4">
+        <div class="card rounded-4 border-0">
+            <div class="card-body">
+                <h4 class="text-center text-muted mb-3">Reservas por Estado</h4>
+                <canvas id="reservasChart" class="shadow-sm rounded-3"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Ingresos Totales por Mes y Reservas Totales por Mes -->
+    <div class="col-md-6 mb-4">
+        <div class="card rounded-4 border-0 mb-4">
+            <div class="card-body">
+                <h4 class="text-center text-muted mb-3">Ingresos Totales por Mes</h4>
+                <canvas id="ingresosChart" class="shadow-sm rounded-3"></canvas>
+            </div>
+        </div>
+
+        <div class="card  rounded-4 border-0">
+            <div class="card-body">
+                <h4 class="text-center text-muted mb-3">Reservas Totales por Mes</h4>
+                <canvas id="reservasPorMesChart" class="shadow-sm rounded-3"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+    // Gráfico de Reservas por Estado
+    const reservasCtx = document.getElementById('reservasChart').getContext('2d');
+    const reservasData = {
+        labels: [
+            "Pendiente", "Completado", "Cancelado", "En curso"
+        ],  // Etiquetas para cada estado de reserva
+        datasets: [{
+            label: 'Reservas por Estado',
+            data: [
+                {% for estado in reservas_por_estado %}
+                    {{ estado.total }},
+                {% endfor %}
+            ],  // Los datos que contienen la cantidad de reservas por estado
+            backgroundColor: ['#FFCE56', '#36A2EB', '#e80410', '#4CAF50'],
+        }]
+    };
+    const reservasChart = new Chart(reservasCtx, {
+        type: 'doughnut',
+        data: reservasData,
+    });
+
+    // Gráfico de Ingresos Totales por Mes
+    const ingresosCtx = document.getElementById('ingresosChart').getContext('2d');
+    const ingresosData = {
+        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        datasets: [{
+            label: 'Ingresos Totales por Mes',
+            data: {{ ingresos_por_mes|safe }},
+            backgroundColor: '#42a5f5',
+            borderColor: '#1e88e5',
+            borderWidth: 1,
+        }]
+    };
+    const ingresosChart = new Chart(ingresosCtx, {
+        type: 'line',
+        data: ingresosData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+<script>
+const reservasPorMesCtx = document.getElementById('reservasPorMesChart').getContext('2d');
+const reservasPorMesData = {
+    labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+    datasets: [{
+        label: 'Reservas Totales por Mes',
+        data: {{ reservas_por_mes_list|safe }},
+        backgroundColor: '#ffb74d',
+        borderColor: '#fb8c00',
+        borderWidth: 1,
+    }]
+};
+const reservasPorMesChart = new Chart(reservasPorMesCtx, {
+    type: 'bar',
+    data: reservasPorMesData,
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+</script>
+
+
+
+{% endblock %}

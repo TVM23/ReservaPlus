@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 
 from django.conf import settings
+from django.db.models.functions import ExtractMonth
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,7 +11,10 @@ from rest_framework import status
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from Reservas.models import Reserva
+from django.shortcuts import render
+from django.db.models import Count, Sum, Avg
+from Reservas.models import Reserva, Pago, Reseña
+from django.utils.dateparse import parse_date
 from .forms import HabitacionForm
 from django.db.models import Q
 from .models import Habitacion, DetalleHabitacion, Servicios
@@ -21,6 +25,8 @@ from django.db.models import Q
 import cloudinary
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
+from collections import defaultdict
+from django.db.models import Count
 
 # Configuration
 cloudinary.config(
@@ -29,6 +35,98 @@ cloudinary.config(
     api_secret=settings.CLOUDINARY_API_SECRET,
     secure=True
 )
+
+@login_required()
+def dashboard_view(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        return redirect('acceso_denegado')
+    # Obtener filtros desde la URL (query parameters)
+    fecha_inicio = request.GET.get('fecha_inicio', None)
+    fecha_final = request.GET.get('fecha_final', None)
+
+    # Filtrar reservas y pagos por rango de fechas
+    reservas = Reserva.objects.all()
+    pagos = Pago.objects.all()
+
+    if fecha_inicio and fecha_final:
+        fecha_inicio = parse_date(fecha_inicio)
+        fecha_final = parse_date(fecha_final)
+        reservas = reservas.filter(fecha_inicio_reserva__gte=fecha_inicio, fecha_final_reserva__lte=fecha_final)
+        pagos = pagos.filter(fecha_pago__date__gte=fecha_inicio, fecha_pago__date__lte=fecha_final)
+
+    # Datos generales
+    total_habitaciones = Habitacion.objects.count()
+    total_reservas = reservas.count()
+    total_reseñas = Reseña.objects.count()
+    total_servicios = Servicios.objects.count()
+    reservas_completadas = reservas.filter(estado="completado").count()
+    ingresos_totales = pagos.filter(estado="completado").aggregate(Sum('monto'))['monto__sum'] or 0.0
+    promedio_calificaciones = Reseña.objects.aggregate(Avg('reseña'))['reseña__avg'] or 0.0
+
+    # Habitaciones con más reservas
+    habitaciones_populares = Habitacion.objects.annotate(
+        total_reservas=Count('habitacionesreservas')
+    ).order_by('-total_reservas')[:5]
+
+    # Servicios más utilizados
+    servicios_populares = Servicios.objects.annotate(
+        total_usos=Count('serviciosreservas')
+    ).order_by('-total_usos')[:5]
+
+    # Obtener ingresos totales por mes
+    ingresos_por_mes = (
+        pagos.filter(estado="completado")
+        .annotate(mes=ExtractMonth("fecha_pago"))
+        .values("mes")
+        .annotate(total=Sum("monto"))
+        .order_by('mes')
+    )
+
+    # Crear lista de ingresos mensuales (asegurando que todos los meses estén representados)
+    ingresos_totales_mes = defaultdict(float)
+    for item in ingresos_por_mes:
+        ingresos_totales_mes[item['mes']] = float(item['total'])  # Convertir Decimal a float
+
+        # Crear una lista ordenada de ingresos por mes
+    ingresos_por_mes_list = [ingresos_totales_mes.get(mes, 0) for mes in range(1, 13)]
+
+        # Datos de reservas por estado (por ejemplo: 'pendiente', 'completado', 'cancelado')
+    reservas_por_estado = reservas.values('estado').annotate(total=Count('estado'))
+
+    # Obtener reservas por mes
+    reservas_por_mes = (
+        reservas
+        .annotate(mes=ExtractMonth("fecha_inicio_reserva"))
+        .values("mes")
+        .annotate(total=Count("id"))
+        .order_by('mes')
+    )
+    # Crear lista de reservas mensuales
+    reservas_totales_mes = defaultdict(int)
+    for item in reservas_por_mes:
+        reservas_totales_mes[item['mes']] = item['total']
+
+    reservas_por_mes_list = [reservas_totales_mes.get(mes, 0) for mes in range(1, 13)]
+
+    context = {
+        "total_habitaciones": total_habitaciones,
+        "total_reservas": total_reservas,
+        "total_reseñas": total_reseñas,
+        "total_servicios": total_servicios,
+        "reservas_completadas": reservas_completadas,
+        "ingresos_totales": ingresos_totales,
+        "promedio_calificaciones": round(promedio_calificaciones, 2),
+        "habitaciones_populares": habitaciones_populares,
+        "servicios_populares": servicios_populares,
+        "fecha_inicio": fecha_inicio,
+        "fecha_final": fecha_final,
+        "ingresos_por_mes": ingresos_por_mes_list,  # Ingresos por mes
+        "reservas_por_estado": reservas_por_estado,  # Reservas por estado
+        "reservas_por_mes_list": reservas_por_mes_list,
+    }
+
+    return render(request, 'dashboard.html', context)
+
 
 @login_required
 def agregar_habitacion(request):
@@ -374,8 +472,10 @@ def lista_habitaciones2(request):
     
 """
 
-
+@login_required
 def lista_habitaciones2(request, fecha_inicio, fecha_final):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
     # Busca las reservas que caen dentro del rango de fechas
     reservas = Reserva.objects.filter(
         Q(fecha_inicio_reserva__lt=fecha_final) & Q(fecha_final_reserva__gt=fecha_inicio) & ~Q(estado="cancelada")
@@ -408,8 +508,10 @@ def lista_habitaciones2(request, fecha_inicio, fecha_final):
         'fecha_final': fecha_final
     })
 
-
+@login_required()
 def detalle_habitacion(request, habitacion_id):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('acceso_denegado')
     # Obtener la habitación por su ID
     habitacion = get_object_or_404(Habitacion, id=habitacion_id)
 
