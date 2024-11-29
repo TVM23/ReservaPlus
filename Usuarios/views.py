@@ -215,31 +215,7 @@ def access_denied(request):
 
 
 #APIs
-"""
-class UserCreateApiView(CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserCreateSerializer
 
-    def create(self, request, *args, **kwargs):
-        # Crear el usuario con el serializador
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-
-        # Autenticación e inicio de sesión con sesiones
-        username = request.data.get('username')
-        password = request.data.get('password1')
-        user = authenticate(username=username, password=password)
-
-        if user is not None:
-            login(request, user)  # Inicia la sesión con el usuario autenticado
-
-        # Devolver una respuesta con éxito y los detalles del usuario
-        return Response({
-            "message": "Registro exitoso. Bienvenido",
-            "user": serializer.data
-        }, status=status.HTTP_201_CREATED)
-"""
 
 class UserCreateApiView(CreateAPIView):
     queryset = User.objects.all()
@@ -269,36 +245,6 @@ class UserCreateApiView(CreateAPIView):
 
 
 
-"""
-class LoginApiView(APIView):
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-
-        # Validar los datos de entrada
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # Obtener los datos validados
-        username = serializer.validated_data['username']
-        password = serializer.validated_data['password']
-
-        # Autenticar al usuario
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            # Si la autenticación es exitosa, iniciar sesión
-            login(request, user)
-            return Response({
-                "message": "Inicio de sesión exitoso. Bienvenido",
-                "user_id": user.id,
-                "username": user.username
-            }, status=status.HTTP_200_OK)
-        else:
-            # Si la autenticación falla, enviar un mensaje de error
-            return Response({
-                "error": "Credenciales inválidas"
-            }, status=status.HTTP_400_BAD_REQUEST)
-"""
 
 class LoginApiView(APIView):
     permission_classes = [AllowAny]  # Permitir acceso sin autenticación
@@ -344,7 +290,22 @@ class LogoutApiView(APIView):
         logout(request)
         return Response({"message": "Sesión cerrada exitosamente."}, status=status.HTTP_200_OK)
 
+class UserProfileApiView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        user = request.user
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "date_joined":user.date_joined,
+            # Agrega más campos si es necesario
+        }
+        return Response({"user": user_data}, status=status.HTTP_200_OK)
 
 
 class UserProfileUpdateApiView(APIView):
