@@ -37,7 +37,7 @@ class LoginSerializer(serializers.Serializer):
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']  # Incluye aquí los campos que se pueden actualizar
+        fields = ['username', 'first_name', 'last_name', 'email']  # Incluye aquí los campos que se pueden actualizar
 
 
 class PasswordChangeSerializer(serializers.Serializer):

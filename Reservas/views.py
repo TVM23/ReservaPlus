@@ -787,7 +787,7 @@ class ReservasUsuarioApiView(APIView):
 
                 habitaciones_info.append({
                     'habitacion': HabitacionesReservasSerializer(habitacion_reservada).data,
-                    'resena': ReseñaSerializer(resena).data if resena else None,  # Serializar la reseña si existe
+                    #'resena': ReseñaSerializer(resena).data if resena else None,  # Serializar la reseña si existe
                 })
 
             reservas_info.append({

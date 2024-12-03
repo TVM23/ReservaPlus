@@ -14,14 +14,16 @@ class ReservaSerializer(serializers.ModelSerializer):
         fields = ['id', 'fecha_inicio_reserva', 'fecha_final_reserva', 'estado', 'Numero_de_habitacion', 'costo']
 
 class HabitacionesReservasSerializer(serializers.ModelSerializer):
+    imagen_slug = serializers.CharField(source="habitacion.slug", read_only=True)
     class Meta:
         model = HabitacionesReservas
-        fields = ['id', 'habitacion', 'personas']
+        fields = ['id', 'habitacion', 'personas', 'imagen_slug']
 
 class ServiciosReservasSerializer(serializers.ModelSerializer):
+    nombre_servicio = serializers.CharField(source='servicio.nombre', read_only=True)
     class Meta:
         model = ServiciosReservas
-        fields = ['id', 'servicio']
+        fields = ['id', 'servicio', 'nombre_servicio']
 
 
 class ReseñaSerializer(serializers.ModelSerializer):
