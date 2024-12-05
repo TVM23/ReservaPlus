@@ -8,8 +8,11 @@ from django.contrib.auth import logout, get_user_model
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+
+from Reservas.models import Reserva, HabitacionesReservas, ServiciosReservas, Reseña
 from .forms import UserUpdateForm, CustomPasswordChangeForm, CustomUserCreationFormRegister
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth import update_session_auth_hash
@@ -91,6 +94,45 @@ def logout_view(request):
 def user_profile(request):
     user = request.user
     return render(request, 'user_profile.html', {'user': user})
+
+@login_required
+def historial_reservas(request):
+    usuario = request.user
+    reservas = Reserva.objects.filter(usuario=usuario).order_by('-fecha_inicio_reserva')
+
+    # Configuración de la paginación
+    paginator = Paginator(reservas, 3)  # 3 reservas por página
+    page_number = request.GET.get('page')
+    page_reservas = paginator.get_page(page_number)
+
+    reservas_info = []
+    for reserva in page_reservas:
+        habitaciones_reserva = HabitacionesReservas.objects.filter(reserva=reserva)
+        servicios_reserva = ServiciosReservas.objects.filter(reserva=reserva)
+
+        habitaciones_info = []
+        for habitacion_reservada in habitaciones_reserva:
+            resena = Reseña.objects.filter(
+                usuario=usuario,
+                habitacion_reservada=habitacion_reservada,
+                reserva=reserva
+            ).first()
+            habitaciones_info.append({
+                'habitacion': habitacion_reservada,
+                'resena': resena
+            })
+
+        reservas_info.append({
+            'reserva': reserva,
+            'habitaciones': habitaciones_info,
+            'servicios': servicios_reserva,
+        })
+
+    context = {
+        'reservas_info': reservas_info,
+        'page_reservas': page_reservas  # Agregar paginación al contexto
+    }
+    return render(request, 'historial_reservas.html', context)
 
 
 @login_required

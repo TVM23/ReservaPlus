@@ -112,7 +112,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "ReservaPlus",
         "USER": "avnadmin",
-        "PASSWORD": config('DATA_BASE_PASSWORD'),
+        "PASSWORD": "AVNS_xJx4uSdfZIF1afutI0Y",
         "HOST": "pg-3ad7fff6-reserva-plus1.i.aivencloud.com",
         "PORT": "24559",
     }

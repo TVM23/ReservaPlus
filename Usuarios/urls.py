@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import RegistroView, LoginView, logout_view, user_profile, usuario_list, toggle_usuario_status, Registro, \
     UserProfileUpdateView, UserPasswordChangeView, access_denied, UserCreateApiView, \
-    LoginApiView, LogoutApiView, UserProfileUpdateApiView, PasswordChangeApiView, UserProfileApiView
+    LoginApiView, LogoutApiView, UserProfileUpdateApiView, PasswordChangeApiView, UserProfileApiView, historial_reservas
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -13,7 +13,8 @@ urlpatterns = [
     path('usuarios/<int:user_id>/toggle/', toggle_usuario_status, name='toggle_usuario_status'),
     path('registros/', Registro, name='Registro_A-E'),
     path('usuarios/editar/', UserProfileUpdateView.as_view(), name='edit_profile'),
-    path('ususarios/cambiar-contraseña/', UserPasswordChangeView.as_view(), name='change_password'),
+    path('usuarios/cambiar-contraseña/', UserPasswordChangeView.as_view(), name='change_password'),
+    path('usuarios/historial-reservas/', historial_reservas, name='historial_reservas'),
     path('acceso-denegado/', access_denied, name='acceso_denegado'),
 
     # Apis
