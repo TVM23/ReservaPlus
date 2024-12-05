@@ -94,6 +94,7 @@ WSGI_APPLICATION = 'ReservaPlus.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -104,7 +105,18 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+"""
 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "ReservaPlus",
+        "USER": "avnadmin",
+        "PASSWORD": config('DATA_BASE_PASSWORD'),
+        "HOST": "pg-3ad7fff6-reserva-plus1.i.aivencloud.com",
+        "PORT": "24559",
+    }
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
