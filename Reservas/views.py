@@ -398,8 +398,8 @@ def checkout_session(request):
                 ],
                 mode='payment',
                 billing_address_collection='required',
-                success_url=DOMAIN + '/Reservas' + '/success',
-                cancel_url=DOMAIN + '/Reservas' + '/cancel',
+                success_url=DOMAIN + 'Reservas' + '/success',
+                cancel_url=DOMAIN + 'Reservas' + '/cancel',
                 customer_email=user_email,
                 metadata={
                     'habitacion_id': habitacion_id,

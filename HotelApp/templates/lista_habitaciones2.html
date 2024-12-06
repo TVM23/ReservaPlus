@@ -12,7 +12,7 @@
         {% for habitacion, detalle in habitaciones_con_detalle %}
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <img src="{{ habitacion.imagen.url }}" class="card-img-top" alt="{{ habitacion.nombre }}">
+                    <img src="{{ habitacion.slug }}" class="card-img-top" alt="{{ habitacion.nombre }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ habitacion.nombre }}</h5>
                         <p class="card-text">Ubicación: {{ detalle.ubicacion }}</p>

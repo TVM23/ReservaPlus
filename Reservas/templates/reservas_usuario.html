@@ -25,7 +25,7 @@
                                 <div class="col-md-4">
                                     {% for habitacion in info.habitaciones %}
                                         <h5>Habitación: {{ habitacion.habitacion.habitacion.nombre }}</h5>
-                                        <img src="{{ habitacion.habitacion.habitacion.imagen.url }}"
+                                        <img src="{{ habitacion.habitacion.habitacion.slug }}"
                                              alt="Imagen de la Habitación" class="img-fluid mb-2">
                                         <p><strong>Precio:</strong> ${{ habitacion.habitacion.habitacion.precio }}</p>
                                         <p><strong>Cupo:</strong> {{ habitacion.habitacion.habitacion.cupo }} personas</p>
