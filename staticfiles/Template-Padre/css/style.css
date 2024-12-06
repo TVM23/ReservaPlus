@@ -1,0 +1,757 @@
+/* styles.css */
+:root {
+    --primary-color: #57bdd3; /* Usamos el color primario del CSS antiguo */
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --text-color: #333;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.page-container {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.text-primary{
+    color: #57bdd3 !important;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+}
+
+.navbar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    line-height: normal;
+}
+
+.navbar-menu {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-item {
+    margin: 0 1rem;
+}
+
+.navbar-item a {
+    color: white;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.navbar-item a:hover {
+    color: var(--secondary-color);
+}
+
+.navbar-auth {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-user {
+    color: white;
+    margin-right: 1rem;
+}
+
+.navbar-button {
+    background-color: white;
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-button:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.navbar-button-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+    margin-left: 0.5rem;
+}
+
+.navbar-button-secondary:hover {
+    background-color: white;
+    color: var(--secondary-color);
+}
+
+/* SUBMENUS */
+
+.navbar-item {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    padding: 10px 0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.navbar-item .dropdown-item{
+    color: #333333;
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa; /* Color de fondo al pasar el mouse */
+    color: #0056b3; /* Color más oscuro para el texto al pasar el mouse */
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.navbar-item .dropdown-item:hover{
+    color: #0056b3;
+}
+
+/* FIN SUBMENUS */
+
+.content {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.btn{
+    padding: 0.75rem;
+    font-weight: bold;
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.footer {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    bottom: 0;
+    flex-shrink: 0;
+    width: 100%;
+}
+
+
+/*  INICIA HOME  */
+.hero {
+        background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+        background-size: cover;
+        background-position: center;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .hero-content {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+    .hero h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+    .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    .cta-button {
+        display: inline-block;
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+    .cta-button:hover {
+        background-color: var(--primary-color);
+    }
+    .features {
+        display: flex;
+        justify-content: space-between;
+        padding: 4rem 2rem;
+        background-color: #f8f9fa;
+        gap: 2rem;
+    }
+    .feature {
+        flex-basis: calc(33.333% - 1.333rem);
+        text-align: center;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    .feature h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+        .features {
+            flex-direction: column;
+        }
+        .feature {
+            margin-bottom: 2rem;
+        }
+    }
+
+/* ACABA HOME */
+
+/* Tablas */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#habitaciones-table, #servicios-table, #detalle-habitaciones-table {
+    width: 100%;
+    min-width: 800px; /* Asegura un ancho mínimo en pantallas pequeñas */
+}
+/* Fin Tablas */
+
+/* Títulos */
+h1 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-top: 20px;
+}
+
+.h1Danger {
+    color: #FD6B20;
+    text-align: center;
+    margin-top: 20px;
+}
+h2 {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+/* Fin Títulos */
+
+.form-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 50px auto;
+    max-width: 400px;
+}
+
+.login-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.form-control {
+    border: 2px solid var(--primary-color);
+    padding: 0.75rem;
+}
+
+.form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: none;
+}
+
+p a {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+p a:hover {
+    color: var(--secondary-color);
+}
+
+/* INICIA REGISTER */
+
+.form-register {
+    max-width: 700px; /* Aumenta el tamaño del contenedor */
+    margin: 50px auto; /* Centra el formulario */
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-register .form-control {
+    font-size: 1rem; /* Tamaño de fuente opcional */
+    padding: 0.75rem;
+}
+
+.form-register .btn-primary {
+    padding: 0.75rem;
+    font-size: 1.1rem; /* Ajuste del tamaño del botón */
+}
+
+
+/* ACABA REGISTER */
+
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    .navbar-menu {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    .navbar-item {
+        margin: 0.5rem 0;
+    }
+}
+
+
+/* PESTAÑA DE INFORMACIÓN DE USUARIO */
+
+.profile-sidebar {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.profile-sidebar img {
+    width: 100px;
+    height: 100px;
+}
+
+.profile-sidebar h5 {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #555;
+    font-size: 16px;
+    padding: 10px 0;
+}
+
+.nav-link:hover {
+    color: var(--secondary-color);
+}
+
+.nav-link.active {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.profile-info {
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.info-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+.info-box h6 {
+    font-weight: bold;
+    color: #333;
+}
+
+.info-box p {
+    color: #555;
+}
+
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* FIN DE PESTAÑA DE INFORMACIÓN DE USUARIO */
+
+
+
+/* INICIO DEL CSS PARA EL CHAT BOT */
+.chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.chatbot-window {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.chatbot-window.hidden {
+    display: none;
+}
+
+.chatbot-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbot-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.chatbot-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.chatbot-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.bot-message {
+    background-color: #f1f0f0;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+
+.chatbot-form {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.chatbot-form input {
+    flex-grow: 1;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin-right: 10px;
+}
+
+.chatbot-form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FIN DEL CSS PARA EL CHAT BOT*/
+
+/* INICIO DEL CSS PARA EL OJO PASSWORD*/
+
+ .password-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+        }
+        .password-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+        .password-input:focus {
+            border-color: #4a90e2;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        .password-toggle:hover {
+            color: #4a90e2;
+        }
+        .password-toggle:focus {
+            outline: none;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* FIN DEL CSS PARA EL PASSWORD OJO*/
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+}
+
+
+.card {
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.habitacion-imagen {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.service-box {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.service-box:hover {
+    background-color: #e9ecef;
+}
+
+/* INICIA: Diseño del flatpickr //////////////////////////////////////// */
+
+.flatpickr-calendar {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem auto auto;
+}
+
+.flatpickr-day.selected {
+    background-color: #57bdd3;
+    color: white;
+    font-weight: bold;
+}
+
+.flatpickr-container {
+    display: block;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center; /* Centrado vertical (si es necesario) */
+}
+
+input#date_range {
+    text-align: center; /* Centra el texto dentro del campo */
+}
+
+/* Estilo para los iconos */
+.icon-detalle-hab {
+    font-size: 1.3rem;
+    margin-right: 10px;
+}
+
+/* FIN: Diseño del flatpickr //////////////////////////////////////// */
+
+
+
+/* INICIO: Habitacion detalle //////////////////////////////////////// */
+
+/* Imagen de la habitación */
+.img-det-hab {
+    height: 350px;
+    object-fit: cover;
+}
+
+/* Sombra y bordes en las tarjetas */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Detalles de la habitación */
+h3.text-primary {
+    font-weight: bold;
+    border-bottom: 2px solid #57bdd3;
+    padding-bottom: 10px;
+}
+
+.h3{
+    color: #57bdd3;
+}
+
+/* Estilo para los botones */
+.btn-lg {
+    font-size: 1.1rem;
+    padding: 12px 30px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+}
+
+/* Botónes  */
+.btn-gradient-success {
+    background: linear-gradient(45deg, #fec35f, #57bdd3);
+    color: white;
+    border: none;
+}
+
+.btn-gradient-success:hover {
+    background: linear-gradient(45deg, #57bdd3, #fec35f);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-dark {
+    border: 2px solid #343a40;
+    color: #343a40;
+}
+
+.btn-outline-dark:hover {
+    background-color: #343a40;
+    color: white;
+}
+
+/* INICIO: Habitacion detalle //////////////////////////////////////// */
