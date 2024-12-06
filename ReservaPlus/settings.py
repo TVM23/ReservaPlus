@@ -62,6 +62,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'Reservas.middleware.DynamicDomainMiddleware',  # Middleware para host dinámico
 ]
 
 ROOT_URLCONF = 'ReservaPlus.urls'
@@ -192,4 +194,4 @@ STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_KEY = config('STRIPE_WEBHOOK_KEY')
 
-DOMAIN = 'http://127.0.0.1:8000/'
+DOMAIN = os.getenv('DOMAIN', 'http://127.0.0.1:8000/')  # Dominio por defecto

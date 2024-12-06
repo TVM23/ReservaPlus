@@ -26,7 +26,6 @@ from django.utils.decorators import method_decorator
 DOMAIN = settings.DOMAIN
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-
 # Create your views here
 """
 @login_required
