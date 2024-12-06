@@ -14,6 +14,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from decouple import config
+from django.contrib import staticfiles
 from django.core.validators import RegexValidator
 from dotenv import load_dotenv
 
@@ -175,6 +176,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "ReservaPlus/static",  # Ajusta esto si tu carpeta está en otro lugar
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Configuración adicional
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
