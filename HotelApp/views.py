@@ -693,6 +693,7 @@ class DetalleHabitacionApiView(APIView):
                     "nombre": habitacion.nombre,
                     "precio": habitacion.precio,
                     "cupo": habitacion.cupo,
+                    "slug":habitacion.slug
                 },
                 "detalle": {
                     "Numero_de_habitacion": detalle.Numero_de_habitacion,

@@ -526,8 +526,9 @@ class ValidarFechasReservaApiView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@method_decorator(login_required, name='dispatch')
+
 class FormularioReservaApiView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, habitacion_id, numero_de_habitacion):
         habitacion = get_object_or_404(Habitacion, id=habitacion_id)
         servicios = Servicios.objects.filter(disponibilidad=True)

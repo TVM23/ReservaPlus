@@ -116,8 +116,8 @@ DATABASES = {
         "NAME": "ReservaPlus",
         "USER": "avnadmin",
         "PASSWORD": config('DATA_BASE_PASSWORD'),
-        "HOST": "pg-3ad7fff6-reserva-plus1.i.aivencloud.com",
-        "PORT": "24559",
+        "HOST": "pg-29a8b35e-reservaplus.h.aivencloud.com",
+        "PORT": "13167",
     }
 }
 
