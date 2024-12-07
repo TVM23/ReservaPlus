@@ -8,7 +8,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.timezone import make_aware
-
+from urllib.parse import unquote
 from HotelApp.models import *
 from django.utils import timezone
 from .models import Reserva, HabitacionesReservas, ServiciosReservas, Reseña, Pago
@@ -615,7 +615,7 @@ class FormularioReservaApiView(APIView):
             "servicios": list(servicios)
         }, status=status.HTTP_200_OK)
 
-
+"""
 class CheckoutSessionAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -674,7 +674,96 @@ class CheckoutSessionAPIView(APIView):
 
         except Exception as error:
             return Response({'error': str(error)}, status=400)
+"""
 
+class CheckoutSessionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, habitacion_id, numero_de_habitacion):
+        try:
+            # Obtener datos de la solicitud
+            fecha_inicio_str = request.data.get('fecha_inicio', '')
+            fecha_final_str = request.data.get('fecha_final', '')
+            numero_personas = request.data.get('numero_personas', '1')  # Valor predeterminado
+            servicios_seleccionados = request.data.get('servicios', [])  # IDs de servicios seleccionados
+
+            # Validar fechas
+            if not (fecha_inicio_str and fecha_final_str):
+                return Response({'error': 'Faltan fechas para la reserva.'}, status=400)
+
+            try:
+                fecha_inicio = datetime.fromisoformat(unquote(fecha_inicio_str))
+                fecha_final = datetime.fromisoformat(unquote(fecha_final_str))
+            except ValueError:
+                return Response({'error': 'Formato de fecha inválido.'}, status=400)
+
+            # Obtener datos de la habitación
+            habitacion = get_object_or_404(Habitacion, id=habitacion_id)
+            detalle = get_object_or_404(DetalleHabitacion, Numero_de_habitacion=numero_de_habitacion)
+
+            # Calcular costos
+            costo_habitacion = calcular_costo(habitacion.precio, fecha_inicio, fecha_final)
+            costo_servicios = sum(
+                Servicios.objects.get(id=servicio_id).precio for servicio_id in servicios_seleccionados
+            )
+            costo_total = costo_habitacion + costo_servicios
+
+            # Crear descripción detallada de los servicios seleccionados
+            descripcion_servicios = ', '.join(
+                Servicios.objects.get(id=servicio_id).nombre for servicio_id in servicios_seleccionados
+            ) or 'Ninguno'
+
+            # Crear descripción personalizada para Stripe
+            descripcion_habitacion = f"""
+                Habitación: {habitacion.nombre}
+                Número de Habitación: {detalle.Numero_de_habitacion}
+                Fechas: {fecha_inicio_str} a {fecha_final_str}
+                Personas: {numero_personas}
+                Servicios: {descripcion_servicios}
+            """.strip()[:500]  # Stripe permite máx. 500 caracteres
+
+            # Crear sesión de Stripe
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'mxn',
+                            'unit_amount': int(costo_total * 100),  # Convertir a centavos
+                            'product_data': {
+                                'name': f'Reserva - {habitacion.nombre}',
+                                'description': descripcion_habitacion,
+                                'images': [habitacion.imagen.url],  # Asegúrate de que `imagen` esté disponible
+                            },
+                        },
+                        'quantity': 1,
+                    },
+                ],
+                mode='payment',
+                billing_address_collection='required',
+                success_url=DOMAIN + '/Reservas/success',
+                cancel_url=DOMAIN + '/Reservas/cancel',
+                customer_email=request.user.email,
+                metadata={
+                    'habitacion_id': habitacion_id,
+                    'fecha_inicio': fecha_inicio_str,
+                    'fecha_final': fecha_final_str,
+                    'numero_personas': numero_personas,
+                    'servicios_seleccionados': ','.join(map(str, servicios_seleccionados)),
+                    'user_id': request.user.id,
+                    'costo_total': costo_total,
+                    'numero_de_habitacion': detalle.Numero_de_habitacion,
+                }
+            )
+
+            # Devolver la URL de la sesión de Stripe
+            return Response({'url': checkout_session.url})
+
+        except Servicios.DoesNotExist:
+            return Response({'error': 'Uno o más servicios seleccionados no existen.'}, status=404)
+        except stripe.error.StripeError as e:
+            return Response({'error': f'Error con Stripe: {str(e)}'}, status=500)
+        except Exception as error:
+            return Response({'error': f'Error inesperado: {str(error)}'}, status=500)
 
 @csrf_exempt
 @require_POST
@@ -835,3 +924,49 @@ class CrearResenaApiView(APIView):
         # Serializar y devolver la respuesta
         resena_data = ReseñaSerializer(nueva_resena).data
         return Response(resena_data, status=status.HTTP_201_CREATED)
+
+class CancelarReservaApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, reserva_id):
+        # Verifica si el usuario es superusuario o staff
+        if request.user.is_superuser or request.user.is_staff:
+            return Response({"error": "Acceso denegado."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Obtiene la reserva o devuelve un 404 si no existe
+        reserva = get_object_or_404(Reserva, id=reserva_id)
+
+        # Verifica que el usuario sea el dueño de la reserva
+        if request.user != reserva.usuario:
+            return Response({"error": "No tienes permiso para cancelar esta reserva."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Cambia el estado de la reserva
+        reserva.estado = "cancelada"
+        reserva.save()
+
+        # Obtén el pago asociado a la reserva
+        pago = reserva.pagos.filter(estado="completado").first()
+
+        # Procesa el reembolso si el pago está completado
+        if pago:
+            try:
+                reembolso = stripe.Refund.create(
+                    payment_intent=pago.transaccion_id  # Usa el ID de transacción de Stripe
+                )
+
+                # Actualiza el estado del pago a "reembolsado"
+                pago.estado = "reembolsado"
+                pago.save()
+
+                return Response({
+                    "message": "La reserva ha sido cancelada y el reembolso se ha procesado exitosamente."
+                }, status=status.HTTP_200_OK)
+            except stripe.error.StripeError as e:
+                return Response({
+                    "error": "Error al procesar el reembolso.",
+                    "detalle": str(e)
+                }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({
+                "message": "La reserva fue cancelada, pero no se encontró un pago completado para reembolsar."
+            }, status=status.HTTP_200_OK)

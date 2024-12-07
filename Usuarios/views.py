@@ -327,10 +327,15 @@ class LoginApiView(APIView):
 
 
 class LogoutApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        # Cierra la sesión del usuario
-        logout(request)
-        return Response({"message": "Sesión cerrada exitosamente."}, status=status.HTTP_200_OK)
+        # Elimina el token del usuario autenticado
+        try:
+            request.user.auth_token.delete()
+            return Response({"message": "Sesión cerrada exitosamente."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "No se pudo cerrar la sesión."}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserProfileApiView(APIView):
     authentication_classes = [TokenAuthentication]

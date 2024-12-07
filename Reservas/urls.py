@@ -2,7 +2,7 @@ from HotelApp.urls import path
 from .views import formulario_reserva, lista_reservas, detalle_reserva, buscar_habitaciones, \
     reservas_usuario, crear_resena, cancelar_reserva, checkout_session, success, cancel, stripe_webhook, \
     ValidarFechasReservaApiView, FormularioReservaApiView, CheckoutSessionAPIView, stripe_webhookAPI, SuccessAPIView, \
-    CancelAPIView, ReservasUsuarioApiView,CrearResenaApiView
+    CancelAPIView, ReservasUsuarioApiView, CrearResenaApiView, CancelarReservaApiView
 
 urlpatterns = [
     path('buscar_habitacion/', buscar_habitaciones, name='buscar_habitacion'),
@@ -33,5 +33,6 @@ urlpatterns = [
     path('api/reservas_usuario/', ReservasUsuarioApiView.as_view(), name='reservas_usuario_api'),
     path('api/crear_resena/<int:usuario_id>/<int:reserva_id>/<int:habitacion_id>/', CrearResenaApiView.as_view(),
          name='crear_resena_api'),
+    path('api/reservas/cancelar/<int:reserva_id>/', CancelarReservaApiView.as_view(), name='cancelar-reserva-api'),
 
 ]
