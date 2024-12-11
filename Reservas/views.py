@@ -9,6 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.timezone import make_aware
 from urllib.parse import unquote
+
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+
 from HotelApp.models import *
 from django.utils import timezone
 
@@ -18,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from datetime import datetime
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from .Serializers import FechaReservaSerializer, ReservaSerializer, HabitacionesReservasSerializer, \
@@ -709,16 +712,23 @@ class CheckoutSessionAPIView(APIView):
 
 
 class SuccessAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
 
     def get(self, request):
+        # Detectar si la solicitud es de una API o un navegador
+        if request.accepted_renderer.format == 'html':
+            return render(request, 'payment_success.html', {'message': 'Pago completado con éxito'})
         return Response({'message': 'Pago completado con éxito'})
 
 
 class CancelAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [AllowAny]
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     def get(self, request):
+        # Detectar si la solicitud es de una API o un navegador
+        if request.accepted_renderer.format == 'html':
+            return render(request, 'payment_cancel.html', {'message': 'El pago fue cancelado'})
         return Response({'message': 'El pago fue cancelado'})
 
 

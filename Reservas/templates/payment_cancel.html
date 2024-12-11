@@ -1,0 +1,22 @@
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'Template-Padre/css/style.css' %}">
+</head>
+
+<header>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a >
+                <img src="https://i.postimg.cc/520z5gcb/35a3db64-cf1a-4ac3-89e5-d5f9e84a6c67-modified.png"
+                     alt="Reservas Plus Logo" class="navbar-logo">
+                <span class="navbar-title">ReservasPlus</span>
+            </a>
+        </div>
+    </nav>
+</header>
+{% block content %}
+
+    <h1>{{ message }}</h1>
+
+{% endblock %}
