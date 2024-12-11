@@ -13,10 +13,13 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import firebase_admin
 from decouple import config
 from django.contrib import staticfiles
 from django.core.validators import RegexValidator
 from dotenv import load_dotenv
+import json
+from firebase_admin import credentials, initialize_app
 
 load_dotenv()  # carga el env
 
@@ -53,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -200,3 +204,15 @@ STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_KEY = config('STRIPE_WEBHOOK_KEY')
 
 DOMAIN = os.getenv('DOMAIN', 'http://127.0.0.1:8000/')  # Dominio por defecto
+
+
+# Cargar las credenciales desde la variable de entorno
+firebase_credentials_json = os.environ.get('FIREBASE_CREDENTIALS')
+cred = credentials.Certificate(json.loads(firebase_credentials_json))
+
+# Inicializar Firebase
+firebase_admin.initialize_app(cred)
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'

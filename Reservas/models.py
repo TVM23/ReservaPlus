@@ -11,6 +11,7 @@ class Reserva(models.Model):
     estado = models.CharField(max_length=50)  # Cambia el tamaño según necesites
     Numero_de_habitacion = models.IntegerField()
     costo = models.FloatField()
+    firebase_token = models.CharField(max_length=255, help_text="Token FCM del cliente", default="")
 
     def __str__(self):
         return f"Reserva {self.id} - {self.usuario.username} ({self.fecha_inicio_reserva} a {self.fecha_final_reserva})"

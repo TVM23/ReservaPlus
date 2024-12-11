@@ -1,7 +1,7 @@
 from HotelApp.urls import path
 from .views import formulario_reserva, lista_reservas, detalle_reserva, buscar_habitaciones, \
     reservas_usuario, crear_resena, cancelar_reserva, checkout_session, success, cancel, stripe_webhook, \
-    ValidarFechasReservaApiView, FormularioReservaApiView, CheckoutSessionAPIView, stripe_webhookAPI, SuccessAPIView, \
+    ValidarFechasReservaApiView, CheckoutSessionAPIView, SuccessAPIView, \
     CancelAPIView, ReservasUsuarioApiView, CrearResenaApiView, CancelarReservaApiView
 
 urlpatterns = [
@@ -24,15 +24,15 @@ urlpatterns = [
 
     # Apis
     path('api/validar-fechas/', ValidarFechasReservaApiView.as_view(), name='validar-fechas-reserva-api'),
-    path('api/formulario-reserva/<int:habitacion_id>/<int:numero_de_habitacion>/', FormularioReservaApiView.as_view(),
-         name='formulario_reserva_api'),
-    path('api/checkout-session/', CheckoutSessionAPIView.as_view(), name='checkout_session_api'),
-    path('api/webhook/', stripe_webhookAPI, name='stripe_webhook'),
+    path('api/checkout/<int:habitacion_id>/<int:numero_de_habitacion>/', CheckoutSessionAPIView.as_view(), name='checkout_session_api'),
     path('api/success/', SuccessAPIView.as_view(), name='payment_success'),
     path('api/cancel/', CancelAPIView.as_view(), name='payment_cancel'),
     path('api/reservas_usuario/', ReservasUsuarioApiView.as_view(), name='reservas_usuario_api'),
     path('api/crear_resena/<int:usuario_id>/<int:reserva_id>/<int:habitacion_id>/', CrearResenaApiView.as_view(),
          name='crear_resena_api'),
     path('api/reservas/cancelar/<int:reserva_id>/', CancelarReservaApiView.as_view(), name='cancelar-reserva-api'),
+
+
+    path('api/reserva_notificacion/', ReservasUsuarioApiView.as_view(), name='reserva_notificacion_api'),
 
 ]

@@ -11,6 +11,8 @@ from django.utils.timezone import make_aware
 from urllib.parse import unquote
 from HotelApp.models import *
 from django.utils import timezone
+
+from Usuarios.views import user_profile
 from .models import Reserva, HabitacionesReservas, ServiciosReservas, Reseña, Pago
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -22,6 +24,7 @@ from rest_framework import status
 from .Serializers import FechaReservaSerializer, ReservaSerializer, HabitacionesReservasSerializer, \
     ServiciosReservasSerializer, ReseñaSerializer
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now, timedelta
 
 DOMAIN = settings.DOMAIN
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -253,7 +256,7 @@ def reservas_usuario(request):
                 ).first()
 
                 habitaciones_info.append({
-                    'habitacion': habitacion_reservada,
+                    'habitacion': habitacion_reservada.habitacion,
                     'resena': resena  # Agregar reseña directamente aquí
                 })
 
@@ -615,66 +618,6 @@ class FormularioReservaApiView(APIView):
             "servicios": list(servicios)
         }, status=status.HTTP_200_OK)
 
-"""
-class CheckoutSessionAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        try:
-            # Obtener datos de la solicitud
-            habitacion_id = request.data.get('habitacion_id')
-            fecha_inicio_str = request.data.get('fecha_inicio')
-            fecha_final_str = request.data.get('fecha_final')
-            numero_personas = request.data.get('numero_personas')
-            servicios_seleccionados = request.data.get('servicios', [])
-            numero_de_habitacion = request.data.get('numero_de_habitacion')
-
-            # Convertir fechas
-            fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
-            fecha_final = datetime.fromisoformat(fecha_final_str)
-
-            # Obtener detalles de la habitación y calcular el costo total
-            habitacion = get_object_or_404(Habitacion, id=habitacion_id)
-            costo_servicios = sum(
-                Servicios.objects.get(id=servicio_id).precio for servicio_id in servicios_seleccionados)
-            costo_total = calcular_costo(habitacion.precio, fecha_inicio, fecha_final) + costo_servicios
-
-            # Crear la sesión de checkout de Stripe
-            checkout_session = stripe.checkout.Session.create(
-                line_items=[{
-                    'price_data': {
-                        'currency': 'mxn',
-                        'unit_amount': int(costo_total * 100),
-                        'product_data': {
-                            'name': habitacion.nombre,
-                            'description': f'Numero personas: {numero_personas}',
-                            'images': [habitacion.slug],
-                        },
-                    },
-                    'quantity': 1,
-                }],
-                mode='payment',
-                billing_address_collection='required',
-                success_url=settings.DOMAIN + '/api/reservas/success',
-                cancel_url=settings.DOMAIN + '/api/reservas/cancel',
-                customer_email=request.user.email,
-                metadata={
-                    'habitacion_id': habitacion_id,
-                    'fecha_inicio': fecha_inicio_str,
-                    'fecha_final': fecha_final_str,
-                    'numero_personas': numero_personas,
-                    'servicios_seleccionados': ','.join(map(str, servicios_seleccionados)),
-                    'user_id': request.user.id,
-                    'costo_total': costo_total,
-                    'numero_de_habitacion': numero_de_habitacion,
-                }
-            )
-
-            return Response({'url': checkout_session.url})
-
-        except Exception as error:
-            return Response({'error': str(error)}, status=400)
-"""
 
 class CheckoutSessionAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -732,7 +675,6 @@ class CheckoutSessionAPIView(APIView):
                             'product_data': {
                                 'name': f'Reserva - {habitacion.nombre}',
                                 'description': descripcion_habitacion,
-                                'images': [habitacion.imagen.url],  # Asegúrate de que `imagen` esté disponible
                             },
                         },
                         'quantity': 1,
@@ -740,8 +682,8 @@ class CheckoutSessionAPIView(APIView):
                 ],
                 mode='payment',
                 billing_address_collection='required',
-                success_url=DOMAIN + '/Reservas/success',
-                cancel_url=DOMAIN + '/Reservas/cancel',
+                success_url="https://reservaplus.onrender.com/" + 'Reservas/' + 'api/success',
+                cancel_url="https://reservaplus.onrender.com/" + 'Reservas/' + 'api/cancel',
                 customer_email=request.user.email,
                 metadata={
                     'habitacion_id': habitacion_id,
@@ -764,76 +706,6 @@ class CheckoutSessionAPIView(APIView):
             return Response({'error': f'Error con Stripe: {str(e)}'}, status=500)
         except Exception as error:
             return Response({'error': f'Error inesperado: {str(error)}'}, status=500)
-
-@csrf_exempt
-@require_POST
-def stripe_webhookAPI(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    endpoint_secret = settings.STRIPE_WEBHOOK_KEY
-
-    try:
-        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-    except (ValueError, stripe.error.SignatureVerificationError) as e:
-        return HttpResponse(status=400)
-
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-
-        habitacion_id = session['metadata']['habitacion_id']
-        fecha_inicio_str = session['metadata']['fecha_inicio']
-        fecha_final_str = session['metadata']['fecha_final']
-        numero_personas = int(session['metadata']['numero_personas'])
-        servicios_seleccionados = session['metadata']['servicios_seleccionados'].split(',')
-        user_id = session['metadata']['user_id']
-        costo_total = float(session['metadata']['costo_total'])
-        numero_de_habitacion = int(session['metadata']['numero_de_habitacion'])
-
-        # Convertir fechas
-        # fecha_inicio = datetime.fromisoformat(fecha_inicio_str)
-        # fecha_final = datetime.fromisoformat(fecha_final_str)
-        fecha_inicio = make_aware(datetime.fromisoformat(fecha_inicio_str))
-        fecha_final = make_aware(datetime.fromisoformat(fecha_final_str))
-
-        # Crear reserva y registrar detalles en la base de datos
-        usuario = User.objects.get(id=user_id)
-        habitacion = Habitacion.objects.get(id=habitacion_id)
-
-        reserva = Reserva.objects.create(
-            fecha_inicio_reserva=fecha_inicio,
-            fecha_final_reserva=fecha_final,
-            usuario=usuario,
-            estado='pendiente',
-            Numero_de_habitacion=numero_de_habitacion,
-            costo=costo_total
-        )
-
-        HabitacionesReservas.objects.create(
-            reserva=reserva,
-            habitacion=habitacion,
-            personas=numero_personas
-        )
-
-        if isinstance(servicios_seleccionados, str):
-            servicios_seleccionados = [s for s in servicios_seleccionados.split(',') if s]
-
-        if servicios_seleccionados:  # Solo entramos al bucle si la lista no está vacía
-            for servicio_id in servicios_seleccionados:
-                servicio = Servicios.objects.get(id=servicio_id)
-                ServiciosReservas.objects.create(
-                    reserva=reserva,
-                    servicio=servicio
-                )
-
-        Pago.objects.create(
-            reserva=reserva,
-            usuario=usuario,
-            monto=costo_total,
-            estado='completado',
-            transaccion_id=session['payment_intent']
-        )
-
-    return JsonResponse({'status': 'success'}, status=200)
 
 
 class SuccessAPIView(APIView):
@@ -970,3 +842,20 @@ class CancelarReservaApiView(APIView):
             return Response({
                 "message": "La reserva fue cancelada, pero no se encontró un pago completado para reembolsar."
             }, status=status.HTTP_200_OK)
+
+class ReservasProximasAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        tiempo_actual = now()
+        limite = tiempo_actual + timedelta(hours=24)
+        reservas = Reserva.objects.filter(fecha_final_reserva__range=(tiempo_actual, limite))
+        data = [
+            {
+                "id": reserva.id,
+                "nombre_cliente": reserva.usuario.username,
+                "fecha_fin": reserva.fecha_final_reserva,
+            }
+            for reserva in reservas
+        ]
+        return Response(data, status=status.HTTP_200_OK)
