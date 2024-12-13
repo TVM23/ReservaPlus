@@ -822,23 +822,26 @@ class CancelarReservaApiView(APIView):
         if request.user != reserva.usuario:
             return Response({"error": "No tienes permiso para cancelar esta reserva."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Cambia el estado de la reserva
-        reserva.estado = "cancelada"
-        reserva.save()
-
         # Obtén el pago asociado a la reserva
         pago = reserva.pagos.filter(estado="completado").first()
+
 
         # Procesa el reembolso si el pago está completado
         if pago:
             try:
+                print(pago.transaccion_id)
                 reembolso = stripe.Refund.create(
                     payment_intent=pago.transaccion_id  # Usa el ID de transacción de Stripe
+
                 )
 
                 # Actualiza el estado del pago a "reembolsado"
                 pago.estado = "reembolsado"
                 pago.save()
+
+                # Solo cuando el reembolso sea exitoso, se cancela la reserva
+                reserva.estado = "cancelada"
+                reserva.save()
 
                 return Response({
                     "message": "La reserva ha sido cancelada y el reembolso se ha procesado exitosamente."
@@ -852,6 +855,7 @@ class CancelarReservaApiView(APIView):
             return Response({
                 "message": "La reserva fue cancelada, pero no se encontró un pago completado para reembolsar."
             }, status=status.HTTP_200_OK)
+
 
 class ReservasProximasAPIView(APIView):
     permission_classes = [IsAuthenticated]

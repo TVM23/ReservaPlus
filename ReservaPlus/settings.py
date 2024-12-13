@@ -208,10 +208,10 @@ DOMAIN = os.getenv('DOMAIN', 'http://127.0.0.1:8000/')  # Dominio por defecto
 
 # Cargar las credenciales desde la variable de entorno
 firebase_credentials_json = os.environ.get('FIREBASE_CREDENTIALS')
-cred = credentials.Certificate(json.loads(firebase_credentials_json))
+#cred = credentials.Certificate(json.loads(firebase_credentials_json))
 
 # Inicializar Firebase
-firebase_admin.initialize_app(cred)
+#firebase_admin.initialize_app(cred)
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['json']
